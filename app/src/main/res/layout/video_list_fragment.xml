@@ -3,25 +3,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+
     <com.app.musicplayer.SwipeListView
         xmlns:swipe="http://schemas.android.com/apk/res-auto"
         android:id="@+id/video_list_view"
         android:listSelector="#00000000"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        swipe:swipeFrontView="@+id/front"
-        swipe:swipeBackView="@+id/front"
+        swipe:swipeFrontView="@id/front"
+        swipe:swipeBackView="@id/back"
         swipe:swipeActionLeft="reveal"
         swipe:swipeActionRight="reveal"
         swipe:swipeMode="both"
         swipe:swipeCloseAllItemsWhenMoveList="false"
         swipe:swipeOpenOnLongPress="true"
         />
-    <TextView
-        android:layout_width="wrap_content"
-        android:id="@+id/front"
-        android:layout_height="wrap_content"
-        android:text="">
-        </TextView>
+
 
 </LinearLayout>

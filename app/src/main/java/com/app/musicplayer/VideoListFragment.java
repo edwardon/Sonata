@@ -47,39 +47,23 @@ import com.google.api.services.youtube.model.*;
 public class VideoListFragment extends Fragment {
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
     private static YouTube youtube;
-    private ArrayAdapter arrayAdapter;
+    private VideoListAdapter videoAdapter;
+    final ArrayList<Video> searchArray = new ArrayList<Video>();
     private SwipeListView swipeListView;
-    private static String[] videos = new String[]{"Video 1", "Video 2"};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.video_list_fragment, container, false);
-        arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, videos);
-        swipeListView = (SwipeListView) rootView.findViewById(R.id.video_list_view);
 
-        /*swipeListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+        swipeListView = (SwipeListView) rootView.findViewById(R.id.video_list_view);
+        videoAdapter = new VideoListAdapter(getActivity(),R.layout.package_row,searchArray);
+        swipeListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
                 mode.setTitle("Selected (" + swipeListView.getCountSelected() + ")");
-            }*/
-
-            /*@Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.menu_delete) {
-                    swipeListView.dismissSelected();
-                    return true;
-                }
-                return false;
-            }*
+            }
             @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.menu_choice_items, menu);
-                return true;
-            }*/
-           /* @Override
             public void onDestroyActionMode(ActionMode mode) {
                 swipeListView.unselectedChoiceStates();
             }
@@ -142,10 +126,11 @@ public class VideoListFragment extends Fragment {
                 for (int position : reverseSortedPositions) {
                     //data.remove(position);
                 }
-                arrayAdapter.notifyDataSetChanged();
+                videoAdapter.notifyDataSetChanged();
             }
-        });*/
-        swipeListView.setAdapter(arrayAdapter);
+        });
+
+        swipeListView.setAdapter(videoAdapter);
 
         new getSearchQuery().execute();
         return rootView;
@@ -215,7 +200,7 @@ public class VideoListFragment extends Fragment {
         if (!iteratorSearchResults.hasNext()) {
             System.out.println(" There aren't any results for your query.");
         }
-        final ArrayList<String> searchArray = new ArrayList<String>();
+
         while (iteratorSearchResults.hasNext()) {
 
             SearchResult singleVideo = iteratorSearchResults.next();
@@ -225,7 +210,7 @@ public class VideoListFragment extends Fragment {
             // item will not contain a video ID.
             if (rId.getKind().equals("youtube#video")) {
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
-                searchArray.add(singleVideo.getSnippet().getTitle());
+                searchArray.add(new Video(rId.getVideoId(),singleVideo.getSnippet().getTitle()));
                 System.out.println(" Video Id" + rId.getVideoId());
                 System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
                 System.out.println(" Thumbnail: " + thumbnail.getUrl());
@@ -236,8 +221,8 @@ public class VideoListFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,searchArray);
-                                            swipeListView.setAdapter(arrayAdapter);
+                                            videoAdapter = new VideoListAdapter(getActivity(),R.layout.package_row,searchArray);
+                                            swipeListView.setAdapter(videoAdapter);
                                         }
                                     });
 
