@@ -5,7 +5,7 @@
     <item
         android:id="@+id/search"
         android:title="@string/search_title"
-        android:icon="@drawable/ic_action_search"
+        compat:icon="@drawable/mag_glass"
         compat:actionViewClass="android.support.v7.widget.SearchView"
         compat:showAsAction="always"
      />

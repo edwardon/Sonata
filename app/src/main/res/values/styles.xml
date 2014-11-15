@@ -64,7 +64,7 @@
         <item name="android:padding">@dimen/padding_new_tag</item>
     </style>
 
-    <style name="ActionTheme" parent="Theme.AppCompat.Light">
+    <style name="ActionTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
         <item name="android:actionBarTabTextStyle">@style/MyActionBarTabText</item>
     </style>

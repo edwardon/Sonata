@@ -27,6 +27,7 @@
         android:layout_gravity="center"
         android:orientation="horizontal">
             <ImageButton
+                android:layout_marginTop="50dp"
             android:id="@+id/play_button"
             android:layout_weight = "3"
             android:layout_width="wrap_content"
@@ -37,6 +38,7 @@
             android:src="@drawable/play"
             android:onClick="playSong"/>
             <ImageButton
+                android:layout_marginTop="50dp"
             android:id="@+id/pause_button"
             android:layout_weight = "3"
             android:layout_width="wrap_content"

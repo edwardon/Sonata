@@ -55,6 +55,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.app.musicplayer.Custom.TypeFaceSpan;
@@ -161,10 +162,7 @@ public class MyActivity extends ActionBarActivity{
 
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
-        ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
-        ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
-        pauseButton.setEnabled(true);
-        pauseButton.setVisibility(View.VISIBLE);
+
 
 
 
@@ -207,6 +205,9 @@ public class MyActivity extends ActionBarActivity{
         SearchView.SearchAutoComplete theTextArea = (SearchView.SearchAutoComplete)searchView.findViewById(R.id.search_src_text);
         theTextArea.setTextColor(Color.WHITE);//or any color that you want
         theTextArea.setHintTextColor(Color.WHITE);
+
+        ImageView searchIcon = (ImageView) searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
+        searchIcon.setImageResource(R.drawable.mag_glass);
         searchView.setSubmitButtonEnabled(true);
         return true;
     }

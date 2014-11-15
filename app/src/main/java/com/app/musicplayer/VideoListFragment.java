@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -57,6 +58,10 @@ public class VideoListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.video_list_fragment, container, false);
 
         swipeListView = (SwipeListView) rootView.findViewById(R.id.video_list_view);
+        ImageButton playButton = (ImageButton) rootView.findViewById(R.id.play_button);
+        ImageButton pauseButton = (ImageButton) rootView.findViewById(R.id.pause_button);
+        pauseButton.setEnabled(false);
+        pauseButton.setVisibility(View.INVISIBLE);
         videoAdapter = new VideoListAdapter(getActivity(),R.layout.package_row,searchArray);
         swipeListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override

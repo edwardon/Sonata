@@ -65,6 +65,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 Bundle bundle = new Bundle();
                 MediaFragment fragment = new MediaFragment();
                 bundle.putString("video_id",item.videoID);
+                ((MyActivity) context).playSong(view);
                 fragment.setArguments(bundle);
 
                 fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
