@@ -80,7 +80,7 @@ public class MediaFragment extends Fragment {
                 mediaPlayer.prepare();
             }
             catch (IOException e){};
-            mediaPlayer.start();
+            //mediaPlayer.start();
             return actualUrlString;
         }
         protected void onPostExecute(String result) {
