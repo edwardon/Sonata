@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.Uri;
 import android.app.FragmentManager;
@@ -53,6 +54,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.app.musicplayer.Custom.TypeFaceSpan;
@@ -64,7 +66,9 @@ public class MyActivity extends ActionBarActivity{
     int numPlaylists;
     private ActionBarDrawerToggle mDrawerToggle;
     private final String PLAYLIST = "PLAYLIST";
+    public static MediaPlayer mediaPlayer = new MediaPlayer();
     SharedPreferences mPrefs;
+    static boolean playing = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +146,10 @@ public class MyActivity extends ActionBarActivity{
 
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
+        ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
+        ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
+        pauseButton.setEnabled(true);
+        pauseButton.setVisibility(View.VISIBLE);
 
 
 
@@ -200,7 +208,25 @@ public class MyActivity extends ActionBarActivity{
         return super.onOptionsItemSelected(item);
     }
     public void playSong(View view) {
-        FragmentManager fragmentManager = getFragmentManager();
+        playing = !playing;
+        ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
+        ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
+        if (playing){
+
+            mediaPlayer.start();
+            playButton.setEnabled(false);
+            playButton.setVisibility(View.INVISIBLE);
+            pauseButton.setEnabled(true);
+            pauseButton.setVisibility(View.VISIBLE);
+
+        }
+        else{
+            mediaPlayer.pause();
+            playButton.setEnabled(true);
+            pauseButton.setEnabled(false);
+            playButton.setVisibility(View.VISIBLE);
+            pauseButton.setVisibility(View.INVISIBLE);
+        }
 
     }
     public void addToPlaylistTest(){
@@ -219,7 +245,7 @@ public class MyActivity extends ActionBarActivity{
                 writer.println("Happy - Pharrell Williams");
                 writer.println("y6Sxv-sUYtM");
                 writer.println("Prototype");
-                writer.println("IdjM4EZOnNKHc");
+                writer.println("jM4EZOnNKHc");
 
 
                 writer.close();

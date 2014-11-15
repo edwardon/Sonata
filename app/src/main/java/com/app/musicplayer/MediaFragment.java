@@ -77,17 +77,20 @@ public class MediaFragment extends Fragment {
             catch (IOException e){}
             Log.v("URL",actualUrlString);
 
-            MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            MyActivity.mediaPlayer.stop();
+
+            MyActivity.mediaPlayer = new MediaPlayer();
+
+            MyActivity.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
             System.out.println("WHY IS THIS: " + actualUrlString);
 
             try{
-                mediaPlayer.setDataSource(mContext, Uri.parse(actualUrlString));
-                mediaPlayer.prepare();
+                MyActivity.mediaPlayer.setDataSource(mContext, Uri.parse(actualUrlString));
+                MyActivity.mediaPlayer.prepare();
             }
             catch (IOException e){};
-            mediaPlayer.start();
+            MyActivity.mediaPlayer.start();
             return actualUrlString;
         }
         protected void onPostExecute(String result) {
