@@ -6,7 +6,7 @@
         android:id="@+id/search"
         android:title="@string/search_title"
         android:icon="@drawable/ic_action_search"
-        android:actionViewClass="android.support.v7.widget.SearchView"
+        compat:actionViewClass="android.support.v7.widget.SearchView"
         compat:showAsAction="always"
      />
 </menu>

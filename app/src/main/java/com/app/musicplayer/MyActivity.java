@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -119,7 +120,7 @@ public class MyActivity extends ActionBarActivity{
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         // Associate searchable configuration with the SearchView
-       /* SearchManager searchManager =
+        SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem searchMenuItem = menu.findItem(R.id.search);
         SearchView searchView =
@@ -127,7 +128,10 @@ public class MyActivity extends ActionBarActivity{
        searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
-        searchView.setSubmitButtonEnabled(true);*/
+        SearchView.SearchAutoComplete theTextArea = (SearchView.SearchAutoComplete)searchView.findViewById(R.id.search_src_text);
+        theTextArea.setTextColor(Color.WHITE);//or any color that you want
+        theTextArea.setHintTextColor(Color.WHITE);
+        searchView.setSubmitButtonEnabled(true);
         return true;
     }
     @Override
