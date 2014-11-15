@@ -2,7 +2,13 @@ package com.app.musicplayer;
 
 import android.app.FragmentManager;
 import android.content.Context;
+
+import android.graphics.Typeface;
+import android.util.TypedValue;
+import android.view.Gravity;
+
 import android.os.Bundle;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.w3c.dom.Attr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +28,7 @@ import java.util.List;
 public class VideoListAdapter extends ArrayAdapter<Video> {
     private ArrayList<Video> videoList;
     private Context context;
-
+    private Typeface openFont;
     public VideoListAdapter(Context context, int resource, List<Video> objects) {
         super(context, resource, objects);
         videoList = (ArrayList) objects;
@@ -36,6 +44,19 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
         }
         TextView textView = (TextView) convertView.findViewById(R.id.example_row_tv_title);
         textView.setText(item.videoTitle);
+
+
+
+        openFont = Typeface.createFromAsset(getContext().getAssets(), "SourceSansPro-Light.otf");
+
+        textView.setTypeface(openFont);
+        textView.setGravity(Gravity.CENTER);
+        int dps = 40;
+        final float scale = getContext().getResources().getDisplayMetrics().density;
+        int pixels = (int) (dps * scale + 0.5f);
+        textView.setHeight(pixels);
+        textView.setPadding(0,0,0,0);
+
         Button playButton = (Button) convertView.findViewById(R.id.example_row_b_action_1);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +70,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 fragmentManager.beginTransaction().replace(R.id.main_linearlayout,fragment).commit();
             }
         });
+
         return convertView;
     }
 }

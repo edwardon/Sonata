@@ -1,5 +1,11 @@
 package com.app.musicplayer;
 
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
+import android.net.Uri;
 import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
@@ -13,6 +19,8 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,11 +29,33 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import android.media.MediaPlayer;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.app.Activity;
+import android.app.ProgressDialog;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.app.musicplayer.Custom.TypeFaceSpan;
 
 
 public class MyActivity extends ActionBarActivity{
@@ -38,7 +68,12 @@ public class MyActivity extends ActionBarActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SpannableString s = new SpannableString("Sonata");
+        s.setSpan(new TypeFaceSpan(this, "SourceSansPro-ExtraLight.otf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setContentView(R.layout.activity_my);
+        android.app.ActionBar actionBar = getActionBar();
+        actionBar.setTitle(s);
         if (savedInstanceState== null){
 
         }
@@ -61,14 +96,24 @@ public class MyActivity extends ActionBarActivity{
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 getActionBar().setTitle("Sonata");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu();
+                SpannableString s = new SpannableString("Sonata");
+                s.setSpan(new TypeFaceSpan(getParent(), "SourceSansPro-ExtraLight.otf"), 0, s.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                android.app.ActionBar actionBar = getActionBar();
+                actionBar.setTitle(s);// creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 getActionBar().setTitle("Sonata");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu();
+                SpannableString s = new SpannableString("Sonata");
+                s.setSpan(new TypeFaceSpan(getParent(), "SourceSansPro-ExtraLight.otf"), 0, s.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                android.app.ActionBar actionBar = getActionBar();
+                actionBar.setTitle(s);// creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -94,6 +139,14 @@ public class MyActivity extends ActionBarActivity{
         fragmentManager.beginTransaction()
                 .replace(R.id.main_linearlayout,new VideoListFragment())
                 .commit();
+
+        String dir = "/data/data/com.app.musicplayer/files";
+        addToPlaylistTest();
+
+
+
+// Update the action bar title with the TypefaceSpan instance
+
 
     }
     @Override
@@ -151,22 +204,40 @@ public class MyActivity extends ActionBarActivity{
 
     }
     public void addToPlaylistTest(){
-        int numPlaylists = 3;
-        for (int i=0; i<3; i++){
-            String FILENAME = "Playlist"+numPlaylists;
+        int numPlaylists = 1;
+        for (int i=0; i<1; i++){
+            String FILENAME = "playlist0";
             try{
+                PrintWriter writer = new PrintWriter("/data/data/com.app.musicplayer/files/playlist0.txt","UTF-8");
+                writer.println("Spinnin' Records");
+                writer.println("Martin Garrix - Animals");
+                writer.println("gCYcHz2k5x0");
+                writer.println("DVBBS & Borgeous - TSUNAMI");
+                writer.println("0EWbonj7f18");
+                writer.println("Dimitri Vegas, Martin Garrix, Like Mike - Tremor");
+                writer.println("9vMh9f41pqE");
 
-                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-                for (int j=0; j<2; j++){
-                    String songName= "Song"+(j+1);
-                    fos.write(songName.getBytes());
-                }
 
-                fos.close();
+
+                writer.close();
+
+//                FileOutputStream fos = openFileOutput("playlist.txt", Context.MODE_PRIVATE);
+//                OutputStreamWriter outputWriter=new OutputStreamWriter(fos);
+//                outputWriter.write("Play"+i+"\n");
+//
+//                for (int j=0; j<2; j++){
+//                    String songName= "Song"+(j+1)+"\n";
+//                    outputWriter.write(songName);
+//                }
+//                outputWriter.close();
+
+                Log.v("info has been stored", "true");
             }
             catch (FileNotFoundException e){}
             catch (IOException e){}
+            //writer.close();
         }
+        mPrefs.edit().putInt(PLAYLIST,1).commit();
     }
     public void addToPlaylist(View view){
 
@@ -195,38 +266,49 @@ public class MyActivity extends ActionBarActivity{
         }
         public void selectItem (int position){
             FragmentManager fragmentManager = getFragmentManager();
-            switch(position) {
-
-                case 0:
-                    Log.v("SEARCH WAS CALLED","yes");
-
-                    mDrawerLayout.closeDrawer(mDrawerList);
-
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.main_linearlayout, new VideoListFragment())
-                            .commit();
-                    break;
-                case 1:
-                    Log.v("PLAYLISTS clicked","yes");
+            try{
 
 
-                    // Insert the fragment by replacing any existing fragment
+                switch(position) {
 
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.main_linearlayout, new PlaylistFragment())
-                            .commit();
-                    mDrawerLayout.closeDrawer(mDrawerList);
-                    break;
-                case 2:
-                    Log.v("SETTINGS was clicked","yes");
-                    mDrawerLayout.closeDrawer(mDrawerList);
-                    break;
-                case 3:
-                    Log.v("ABOUT was clicked","yes");
-                    mDrawerLayout.closeDrawer(mDrawerList);
-                    break;
-                default:
+                    case 0:
+                        Log.v("SEARCH WAS CALLED","yes");
+
+                        mDrawerLayout.closeDrawer(mDrawerList);
+
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.main_linearlayout, new VideoListFragment())
+                                .commit();
+                        break;
+                    case 1:
+                        Log.v("PLAYLISTS clicked","yes");
+
+
+                        // Insert the fragment by replacing any existing fragment
+                        PlaylistFragment fragment = new PlaylistFragment();
+                        Bundle args = new Bundle();
+                        int numlists = mPrefs.getInt(PLAYLIST,0);
+                        args.putInt("playlists",numlists);
+                        fragment.setArguments(args);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.main_linearlayout, fragment)
+                                .commit();
+                        mDrawerLayout.closeDrawer(mDrawerList);
+                        break;
+                    case 2:
+                        Log.v("SETTINGS was clicked","yes");
+                        mDrawerLayout.closeDrawer(mDrawerList);
+                        break;
+                    case 3:
+                        Log.v("ABOUT was clicked","yes");
+                        mDrawerLayout.closeDrawer(mDrawerList);
+                        break;
+                    default:
+                }
             }
+            catch (NullPointerException e){}
+
+
         }
     }
 
