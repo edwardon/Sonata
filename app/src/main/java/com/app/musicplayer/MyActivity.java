@@ -139,10 +139,25 @@ public class MyActivity extends ActionBarActivity{
         addToPlaylistTest();
         FragmentManager fragmentManager = getFragmentManager();
 
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Fragment fragment = new VideoListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("query",query);
+            fragment.setArguments(bundle);
+            fragmentManager.beginTransaction()
+                    .replace(R.id.main_linearlayout,fragment)
+                    .commit();
+        }
+        else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.main_linearlayout,new VideoListFragment())
+                    .commit();
+        }
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.main_linearlayout,new VideoListFragment())
-                .commit();
+
 
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();

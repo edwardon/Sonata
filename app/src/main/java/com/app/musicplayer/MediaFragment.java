@@ -48,6 +48,7 @@ public class MediaFragment extends Fragment {
     private String videoId;
     //private MediaPlayer mediaPlayer;
     private Handler mHandler = new Handler();
+    private MediaPlayer mediaPlayer = new MediaPlayer();
     public MediaFragment(){
         mContext = getActivity();
     }
@@ -76,7 +77,6 @@ public class MediaFragment extends Fragment {
             }
             catch (IOException e){}
             Log.v("URL",actualUrlString);
-
             MyActivity.mediaPlayer.stop();
 
             MyActivity.mediaPlayer = new MediaPlayer();
@@ -103,8 +103,20 @@ public class MediaFragment extends Fragment {
         }
     }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         if (getArguments() == null) {
+            videoId = "";
+        }
+        else {
+            videoId = getArguments().getString("video_id");
+        }
+        new YoutubeScrape().execute();
+    }
+    /*@Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        /*if (getArguments() == null) {
             videoId = "";
         }
         else {
@@ -115,7 +127,7 @@ public class MediaFragment extends Fragment {
         return rootView;
 
         //return super.onCreateView(inflater, container, savedInstanceState);
-    }
+    }*/
 
     public static int getSupportedFallbackId(int pOldId){
         final int lSupportedFormatIds[] = {13,  //3GPP (MPEG-4 encoded) Low quality

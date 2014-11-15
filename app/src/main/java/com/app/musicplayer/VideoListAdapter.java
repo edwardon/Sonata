@@ -67,7 +67,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 bundle.putString("video_id",item.videoID);
                 fragment.setArguments(bundle);
 
-                fragmentManager.beginTransaction().replace(R.id.main_linearlayout,fragment).commit();
+                fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
             }
         });
 
