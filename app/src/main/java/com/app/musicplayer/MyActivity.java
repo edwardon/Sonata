@@ -1,57 +1,31 @@
 package com.app.musicplayer;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Spannable;
-import android.text.SpannableString;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import android.support.v4.view.MenuItemCompat;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URLDecoder;
-import java.util.Enumeration;
-import java.util.Vector;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.util.Log;
-import android.view.Menu;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.app.musicplayer.Custom.TypeFaceSpan;
 
 public class MyActivity extends ActionBarActivity{
     private DrawerLayout mDrawerLayout;
@@ -143,8 +117,17 @@ public class MyActivity extends ActionBarActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
+        inflater.inflate(R.menu.main, menu);
+        // Associate searchable configuration with the SearchView
+       /* SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchMenuItem = menu.findItem(R.id.search);
+        SearchView searchView =
+                (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+       searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
 
+        searchView.setSubmitButtonEnabled(true);*/
         return true;
     }
     @Override
@@ -158,6 +141,10 @@ public class MyActivity extends ActionBarActivity{
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
+    }
+    public void playSong(View view) {
+        FragmentManager fragmentManager = getFragmentManager();
+
     }
     public void addToPlaylistTest(){
         int numPlaylists = 3;

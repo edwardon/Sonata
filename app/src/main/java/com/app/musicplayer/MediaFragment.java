@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MediaFragment extends Fragment {
     Context mContext;
-    static String actualString = "";
+    private String videoId;
     //private MediaPlayer mediaPlayer;
     private Handler mHandler = new Handler();
     public MediaFragment(){
@@ -57,7 +57,14 @@ public class MediaFragment extends Fragment {
         @Override
         protected String doInBackground(Void... voids) {
             String actualUrlString= "";
-            String lVideoIdStr = Uri.parse("ytv://TFdDZOoQrUE").getEncodedSchemeSpecificPart();
+            String lVideoIdStr;
+            if (videoId == "") {
+                lVideoIdStr = Uri.parse("ytv://TFdDZOoQrUE").getEncodedSchemeSpecificPart();
+            }
+            else {
+                System.out.println("KREWELLA LIVE FOR THEN IGHT" + videoId);
+                lVideoIdStr = Uri.parse("ytv://" + videoId).getEncodedSchemeSpecificPart();
+            }
             Log.v("STR =", lVideoIdStr);
             if(lVideoIdStr.startsWith("//")){
                 if(lVideoIdStr.length() > 2){
@@ -94,10 +101,13 @@ public class MediaFragment extends Fragment {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        if (getArguments() == null) {
+            videoId = "";
+        }
+        else {
+            videoId = getArguments().getString("video_id");
+        }
         View rootView = inflater.inflate(R.layout.fragment_media, container, false);
-        String url="";
-
         new YoutubeScrape().execute();
         return rootView;
 
