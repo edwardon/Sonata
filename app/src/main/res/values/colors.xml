@@ -26,4 +26,9 @@
     <color name="line">#ffbcbcbc</color>
     <color name="background_new_tag">#ff0000</color>
     <color name="text_new_tag">#ffffff</color>
+    <color name="dark_grey">#616161</color>
+    <color name="teal">#009688</color>
+    <color name="light_grey">#E0E0E0</color>
+    <color name = "navy">#00006B</color>
+    <color name = "white"> #FFFFFf</color>
 </resources>

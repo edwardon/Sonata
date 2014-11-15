@@ -97,6 +97,7 @@ public class MediaFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_media, container, false);
         String url="";
+
         new YoutubeScrape().execute();
         return rootView;
 

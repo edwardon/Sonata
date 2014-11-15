@@ -1,9 +1,5 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-    </style>
     <!-- List -->
     <style name="ListBackContent">
         <item name="android:layout_width">fill_parent</item>
@@ -59,12 +55,36 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">@dimen/line_default</item>
     </style>
+
     <style name="New">
         <item name="android:textColor">@color/text_new_tag</item>
         <item name="android:textSize">@dimen/font_size_new_tag</item>
         <item name="android:text">@string/newTag</item>
         <item name="android:background">@drawable/background_new_tag</item>
         <item name="android:padding">@dimen/padding_new_tag</item>
+    </style>
+
+    <style name="ActionTheme" parent="Theme.AppCompat.Light">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="android:actionBarTabTextStyle">@style/MyActionBarTabText</item>
+    </style>
+
+    <style name = "MyActionBar" parent = "Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/teal</item>
+        <item name= "android:textColor">@color/white</item>
+        <item name="android:icon">@android:color/transparent</item>
+        <item name = "android:titleTextStyle">@style/MyActionBarTitleText</item>
+
+    </style>
+    <style name="MyActionBarTitleText"
+        parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="MyActionBarTabText"
+        parent="@style/Widget.AppCompat.ActionBar.TabText">
+        <item name="android:textColor">@color/white</item>
+
     </style>
 </resources>
 
