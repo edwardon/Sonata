@@ -98,7 +98,7 @@ public class MediaFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_media, container, false);
         String url="";
-        mProgress = (ProgressBar) getActivity().findViewById(R.id.youtube_progress_bar);
+        //mProgress = (ProgressBar) getActivity().findViewById(R.id.youtube_progress_bar);
         new YoutubeScrape().execute();
         return rootView;
 

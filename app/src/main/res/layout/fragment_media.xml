@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical|center_horizontal">
 
-    <ProgressBar
-        android:id="@+id/youtube_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@android:style/Widget.ProgressBar.Small"
-        android:indeterminateOnly="true"
-        android:layout_marginRight="5dp"
-        android:layout_gravity="center" />
 
 
 </RelativeLayout>
