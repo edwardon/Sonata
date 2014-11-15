@@ -251,15 +251,15 @@ public class MyActivity extends ActionBarActivity{
             String FILENAME = "playlist0";
             try{
                 PrintWriter writer = new PrintWriter("/data/data/com.app.musicplayer/files/playlist0.txt","UTF-8");
-                writer.println("Spinnin' Records");
-                writer.println("Martin Garrix - Animals");
-                writer.println("gCYcHz2k5x0");
-                writer.println("DVBBS & Borgeous - TSUNAMI");
-                writer.println("0EWbonj7f18");
-                writer.println("Dimitri Vegas, Martin Garrix, Like Mike - Tremor");
-                writer.println("9vMh9f41pqE");
-                writer.println("Happy - Pharrell Williams");
-                writer.println("y6Sxv-sUYtM");
+                writer.println("EDM Playlist");
+                writer.println("Best Electronic Dance Music Mix 2014 [EDM] ");
+                writer.println("G-WjN61kfBw");
+                writer.println("Frontier - Thisnameisafail");
+                writer.println("Ph26aycXpPQ");
+                writer.println("Seven Lions - Don't Leave (Ft. Ellie Goulding)");
+                writer.println("SKlbCjNCDn4");
+                writer.println("Live For The Night - Krewella");
+                writer.println("TFdDZOoQrUE");
                 writer.println("Prototype");
                 writer.println("jM4EZOnNKHc");
 
