@@ -46,7 +46,6 @@ import java.util.concurrent.TimeUnit;
 public class MediaFragment extends Fragment {
     Context mContext;
     static String actualString = "";
-    private ProgressBar mProgress;
     //private MediaPlayer mediaPlayer;
     private Handler mHandler = new Handler();
     public MediaFragment(){
@@ -98,7 +97,7 @@ public class MediaFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_media, container, false);
         String url="";
-        //mProgress = (ProgressBar) getActivity().findViewById(R.id.youtube_progress_bar);
+
         new YoutubeScrape().execute();
         return rootView;
 

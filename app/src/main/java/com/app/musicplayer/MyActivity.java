@@ -64,7 +64,9 @@ public class MyActivity extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        if (savedInstanceState== null){
 
+        }
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         String [] drawerTitles = {"Search", "Playlists", "Settings", "About"};
@@ -77,7 +79,7 @@ public class MyActivity extends ActionBarActivity{
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.drawable.ic_drawer_white,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description */
                 R.string.drawer_open/* "close drawer" description */
         ) {
@@ -111,6 +113,13 @@ public class MyActivity extends ActionBarActivity{
         }
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         addToPlaylistTest();
+        FragmentManager fragmentManager = getFragmentManager();
+
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.main_linearlayout,new VideoListFragment())
+                .commit();
+
     }
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -194,19 +203,26 @@ public class MyActivity extends ActionBarActivity{
             //getActionBar().setHomeButtonEnabled(true);
         }
         public void selectItem (int position){
+            FragmentManager fragmentManager = getFragmentManager();
             switch(position) {
+
                 case 0:
                     Log.v("SEARCH WAS CALLED","yes");
+
                     mDrawerLayout.closeDrawer(mDrawerList);
+
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.main_linearlayout, new VideoListFragment())
+                            .commit();
                     break;
                 case 1:
                     Log.v("PLAYLISTS clicked","yes");
-                    Fragment fragment = new PlaylistFragment();
+
 
                     // Insert the fragment by replacing any existing fragment
-                    FragmentManager fragmentManager = getFragmentManager();
+
                     fragmentManager.beginTransaction()
-                            .replace(R.id.drawer_layout, fragment)
+                            .replace(R.id.main_linearlayout, new PlaylistFragment())
                             .commit();
                     mDrawerLayout.closeDrawer(mDrawerList);
                     break;
