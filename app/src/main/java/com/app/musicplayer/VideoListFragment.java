@@ -45,7 +45,7 @@ import com.google.api.services.youtube.model.*;
 
 
 public class VideoListFragment extends Fragment {
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
+    private static final long NUMBER_OF_VIDEOS_RETURNED = 50;
     private static YouTube youtube;
     private VideoListAdapter videoAdapter;
     final ArrayList<Video> searchArray = new ArrayList<Video>();
@@ -156,7 +156,7 @@ public class VideoListFragment extends Fragment {
             }).setApplicationName("clean-yew-765").build();
 
             // Prompt the user to enter a query term.
-            String queryTerm = "krewella";
+            String queryTerm = "thisnameisafail prototype";
 
             // Define the API request for retrieving search results.
             YouTube.Search.List search = youtube.search().list("id,snippet");
@@ -212,6 +212,7 @@ public class VideoListFragment extends Fragment {
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
                 searchArray.add(new Video(rId.getVideoId(),singleVideo.getSnippet().getTitle()));
                 System.out.println(" Video Id" + rId.getVideoId());
+
                 System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
                 System.out.println(" Thumbnail: " + thumbnail.getUrl());
                 System.out.println("\n-------------------------------------------------------------\n");
