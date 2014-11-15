@@ -61,7 +61,7 @@ public class MyActivity extends Activity {
         player.start();*/
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        String [] drawerTitles = {"About"};
+        String [] drawerTitles = {"Search, Playlists, Settings, About"};
         final Context context = this;
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item,drawerTitles));
