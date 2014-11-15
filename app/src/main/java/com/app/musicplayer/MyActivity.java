@@ -34,17 +34,5 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-
-        /*MediaPlayer player = new MediaPlayer();
-       // new YouTubePlayTask("CHCwXc4DBaA", player).execute();
-        try {
-            player.setDataSource("rtsp://r6---sn-jc47eu7l.c.youtube.com/CiILENy73wIaGQkreq3yN6pNFRMYDSANFEgGUgZ2aWRlb3MM/0/0/0/video.3gp");
-            player.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        player.start();*/
-
     }
 }

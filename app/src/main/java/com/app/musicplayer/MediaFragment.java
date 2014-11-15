@@ -70,24 +70,7 @@ public class MediaFragment extends Fragment {
             }
             catch (IOException e){}
             Log.v("URL",actualUrlString);
-            /*getActivity().runOnUiThread(new Runnable() {
 
-                @Override
-                public void run() {
-
-                    MediaPlayer mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-                    System.out.println("WHY IS THIS: " + actualString);
-
-                    try{
-                        mediaPlayer.setDataSource(mContext, Uri.parse(actualString));
-                        mediaPlayer.prepare();
-                    }
-                    catch (IOException e){};
-                    mediaPlayer.start();
-                }
-            });*/
             MediaPlayer mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
@@ -99,7 +82,7 @@ public class MediaFragment extends Fragment {
             }
             catch (IOException e){};
             mediaPlayer.start();
-            return actualString;
+            return actualUrlString;
         }
         protected void onPostExecute(String result) {
 
@@ -117,27 +100,6 @@ public class MediaFragment extends Fragment {
         String url="";
         mProgress = (ProgressBar) getActivity().findViewById(R.id.youtube_progress_bar);
         new YoutubeScrape().execute();
-       /* try {
-            String youtubeLink = new YoutubeScrape().execute().get();
-            MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-            System.out.println("WHY IS THIS: " + youtubeLink);
-
-            try{
-                mediaPlayer.setDataSource(mContext, Uri.parse(youtubeLink));
-                mediaPlayer.prepare();
-            }
-            catch (IOException e){};
-            mediaPlayer.start();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
-
-
-
         return rootView;
 
         //return super.onCreateView(inflater, container, savedInstanceState);
