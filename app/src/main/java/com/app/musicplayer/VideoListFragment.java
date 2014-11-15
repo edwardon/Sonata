@@ -217,7 +217,9 @@ public class VideoListFragment extends Fragment {
             if (rId.getKind().equals("youtube#video")) {
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
                 searchArray.add(new Video(rId.getVideoId(),singleVideo.getSnippet().getTitle()));
-                System.out.println("Video Id: " + rId.getVideoId());
+
+                System.out.println(" Video Id: " + rId.getVideoId());
+
 
                 System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
                 System.out.println(" Thumbnail: " + thumbnail.getUrl());
