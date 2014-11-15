@@ -50,6 +50,7 @@ public class VideoListFragment extends Fragment {
     private VideoListAdapter videoAdapter;
     final ArrayList<Video> searchArray = new ArrayList<Video>();
     private SwipeListView swipeListView;
+    private String queryTerm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -131,7 +132,12 @@ public class VideoListFragment extends Fragment {
         });
 
         swipeListView.setAdapter(videoAdapter);
-
+        if (getArguments() == null) {
+            queryTerm = "thisnameisafail prototype";
+        }
+        else {
+            queryTerm = getArguments().getString("query");
+        }
         new getSearchQuery().execute();
         return rootView;
     }
@@ -156,7 +162,7 @@ public class VideoListFragment extends Fragment {
             }).setApplicationName("clean-yew-765").build();
 
             // Prompt the user to enter a query term.
-            String queryTerm = "thisnameisafail prototype";
+            //queryTerm = "thisnameisafail prototype";
 
             // Define the API request for retrieving search results.
             YouTube.Search.List search = youtube.search().list("id,snippet");
@@ -211,7 +217,7 @@ public class VideoListFragment extends Fragment {
             if (rId.getKind().equals("youtube#video")) {
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
                 searchArray.add(new Video(rId.getVideoId(),singleVideo.getSnippet().getTitle()));
-                System.out.println(" Video Id" + rId.getVideoId());
+                System.out.println("Video Id: " + rId.getVideoId());
 
                 System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
                 System.out.println(" Thumbnail: " + thumbnail.getUrl());
