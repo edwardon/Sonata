@@ -137,11 +137,25 @@ public class MediaFragment extends Fragment {
                 itag = m1.group(1);
             }
 
+            /* By checking both s and signature, I can find all the sigs, however, some of the signatures
+             are encrypted, and need to be decrypted for the url to be valid.
+              */
+
             Pattern p2 = Pattern.compile("s=(.*?)[&]");
             Matcher m2 = p2.matcher(url);
             String sig = null;
             if (m2.find()) {
                 sig = m2.group(1);
+            }
+
+            // Try again with "signature" instead of "s"
+            if (sig == null) {
+                p2 = Pattern.compile("signature=(.*?)[&]");
+                m2 = p2.matcher(url);
+                sig = null;
+                if (m2.find()) {
+                    sig = m2.group(1);
+                }
             }
 
             Pattern p3 = Pattern.compile("url=(.*?)[&]");
