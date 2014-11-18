@@ -5,6 +5,7 @@ import android.app.Fragment;
 /**
  * Created by edward on 14/11/14.
  */
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -21,24 +22,30 @@ import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 import com.keyes.youtube.Format;
-import com.keyes.youtube.VideoStream;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Yuwei on 2014-11-13.
@@ -46,61 +53,8 @@ import java.util.concurrent.TimeUnit;
 public class MediaFragment extends Fragment {
     Context mContext;
     private String videoId;
-    //private MediaPlayer mediaPlayer;
-    private Handler mHandler = new Handler();
-    private MediaPlayer mediaPlayer = new MediaPlayer();
     public MediaFragment(){
         mContext = getActivity();
-    }
-
-    private class YoutubeScrape extends AsyncTask<Void,Void,String> {
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            String actualUrlString= "";
-            String lVideoIdStr;
-            if (videoId == "") {
-                lVideoIdStr = Uri.parse("ytv://TFdDZOoQrUE").getEncodedSchemeSpecificPart();
-            }
-            else {
-                System.out.println("KREWELLA LIVE FOR THEN IGHT" + videoId);
-                lVideoIdStr = Uri.parse("ytv://" + videoId).getEncodedSchemeSpecificPart();
-            }
-            Log.v("STR =", lVideoIdStr);
-            if(lVideoIdStr.startsWith("//")){
-                if(lVideoIdStr.length() > 2){
-                    lVideoIdStr = lVideoIdStr.substring(2);
-                }
-            }
-            try {
-                actualUrlString = calculateYouTubeUrl("18", true, lVideoIdStr);
-            }
-            catch (IOException e){}
-            Log.v("URL",actualUrlString);
-            MyActivity.mediaPlayer.stop();
-
-            MyActivity.mediaPlayer = new MediaPlayer();
-
-            MyActivity.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-            System.out.println("WHY IS THIS: " + actualUrlString);
-
-            try{
-                MyActivity.mediaPlayer.setDataSource(mContext, Uri.parse(actualUrlString));
-                MyActivity.mediaPlayer.prepare();
-            }
-            catch (IOException e){};
-            MyActivity.mediaPlayer.start();
-            return actualUrlString;
-        }
-        protected void onPostExecute(String result) {
-
-            //mProgress.setEnabled(false);
-
-            //actualString = "http%3A%2F%2Fr4---sn-5aanugx5h-tuvl.googlevideo.com%2Fvideoplayback%3Fupn%3D75KJYmnRjdQ%26mm%3D31%26ipbits%3D0%26mt%3D1415997589%26mv%3Dm%26ms%3Dau%26fexp%3D904732%252C907259%252C914020%252C916640%252C922243%252C927622%252C932404%252C936111%252C943909%252C945084%252C947209%252C947215%252C948124%252C952302%252C952605%252C952901%252C953603%252C953912%252C955100%252C957103%252C957105%252C957201%26cwbhb%3Dyes%26sver%3D3%26expire%3D1416019302%26key%3Dyt5%26ip%3D129.97.125.93%26initcwndbps%3D6975000%26source%3Dyoutube%26ratebypass%3Dyes%26sparams%3Dcwbhb%252Cid%252Cinitcwndbps%252Cip%252Cipbits%252Citag%252Cmm%252Cms%252Cmv%252Cratebypass%252Csource%252Cupn%252Cexpire%26itag%3D18%26id%3Do-ACqtHTb3iAXmMa2p48xf5yMOU4RZJxTx6k47Yp087FAX%26signature%3DB79D5715B736731E0CAE587BF49D37EBE8DE0FB4.E8CA59F99F2CCBE845684B9873890D868DF03446";
-
-
-        }
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,119 +66,256 @@ public class MediaFragment extends Fragment {
         else {
             videoId = getArguments().getString("video_id");
         }
-        new YoutubeScrape().execute();
-    }
-    /*@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        /*if (getArguments() == null) {
-            videoId = "";
-        }
-        else {
-            videoId = getArguments().getString("video_id");
-        }
-        View rootView = inflater.inflate(R.layout.fragment_media, container, false);
-        new YoutubeScrape().execute();
-        return rootView;
-
-        //return super.onCreateView(inflater, container, savedInstanceState);
-    }*/
-
-    public static int getSupportedFallbackId(int pOldId){
-        final int lSupportedFormatIds[] = {13,  //3GPP (MPEG-4 encoded) Low quality
-                17,  //3GPP (MPEG-4 encoded) Medium quality
-                18,  //MP4  (H.264 encoded) Normal quality
-                22,  //MP4  (H.264 encoded) High quality
-                37   //MP4  (H.264 encoded) High quality
-        };
-        int lFallbackId = pOldId;
-        for(int i = lSupportedFormatIds.length - 1; i >= 0; i--){
-            if(pOldId == lSupportedFormatIds[i] && i > 0){
-                lFallbackId = lSupportedFormatIds[i-1];
-            }
-        }
-        return lFallbackId;
+        new YouTubePageStreamUriGetter().execute("https://www.youtube.com/watch?v=" + videoId);
     }
 
-    public String calculateYouTubeUrl(String pYouTubeFmtQuality, boolean pFallback,
-                                      String pYouTubeVideoId) throws IOException,
-            ClientProtocolException, UnsupportedEncodingException {
+    public ArrayList<VideoStream> getStreamingUrisFromYouTubePage(String ytUrl)
+            throws IOException {
+        if (ytUrl == null) {
+            return null;
+        }
 
-        String lUriStr = null;
-        HttpClient lClient = new DefaultHttpClient();
+        // Remove any query params in query string after the watch?v=<vid> in
+        // e.g.
+        // http://www.youtube.com/watch?v=0RUPACpf8Vs&feature=youtube_gdata_player
+        int andIdx = ytUrl.indexOf('&');
+        if (andIdx >= 0) {
+            ytUrl = ytUrl.substring(0, andIdx);
+        }
 
-        HttpGet lGetMethod = new HttpGet("http://www.youtube.com/get_video_info?&video_id=" +
-                pYouTubeVideoId);
+        // Get the HTML response
+        String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0.1)";
+        HttpClient client = new DefaultHttpClient();
+        client.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
+                userAgent);
+        HttpGet request = new HttpGet(ytUrl);
+        HttpResponse response = client.execute(request);
+        String html = "";
+        InputStream in = response.getEntity().getContent();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder str = new StringBuilder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            str.append(line.replace("\\u0026", "&"));
+        }
+        in.close();
+        html = str.toString();
 
-        HttpResponse lResp = null;
+        // Parse the HTML response and extract the streaming URIs
+        if (html.contains("verify-age-thumb")) {
+            Log.e("Error: ","YouTube is asking for age verification. We can't handle that sorry.");
+            return null;
+        }
 
-        lResp = lClient.execute(lGetMethod);
+        if (html.contains("das_captcha")) {
+            Log.e("Error: ", "Captcha found, please try with different IP address.");
+            return null;
+        }
 
-        ByteArrayOutputStream lBOS = new ByteArrayOutputStream();
-        String lInfoStr = null;
+        Pattern p = Pattern.compile("stream_map\": \"(.*?)?\"");
+        // Pattern p = Pattern.compile("/stream_map=(.[^&]*?)\"/");
+        Matcher m = p.matcher(html);
+        List<String> matches = new ArrayList<String>();
+        while (m.find()) {
+            matches.add(m.group());
+        }
 
-        lResp.getEntity().writeTo(lBOS);
-        lInfoStr = new String(lBOS.toString("UTF-8"));
+        if (matches.size() != 1) {
+            Log.e("Error: ", "Found zero or too many stream maps.");
+            return null;
+        }
 
-        String[] lArgs=lInfoStr.split("&");
-        Map<String,String> lArgMap = new HashMap<String, String>();
-        for(int i=0; i<lArgs.length; i++){
-            String[] lArgValStrArr = lArgs[i].split("=");
-            if(lArgValStrArr != null){
-                if(lArgValStrArr.length >= 2){
-                    lArgMap.put(lArgValStrArr[0], URLDecoder.decode(lArgValStrArr[1]));
+        String urls[] = matches.get(0).split(",");
+        HashMap<String, String> foundArray = new HashMap<String, String>();
+        for (String ppUrl : urls) {
+            String url = URLDecoder.decode(ppUrl, "UTF-8");
+
+            Pattern p1 = Pattern.compile("itag=([0-9]+?)[&]");
+            Matcher m1 = p1.matcher(url);
+            String itag = null;
+            if (m1.find()) {
+                itag = m1.group(1);
+            }
+
+            Pattern p2 = Pattern.compile("s=(.*?)[&]");
+            Matcher m2 = p2.matcher(url);
+            String sig = null;
+            if (m2.find()) {
+                sig = m2.group(1);
+            }
+
+            Pattern p3 = Pattern.compile("url=(.*?)[&]");
+            Matcher m3 = p3.matcher(ppUrl);
+            String um = null;
+            if (m3.find()) {
+                um = m3.group(1);
+            }
+            if (itag == null) {
+                Log.e("Error: ", "null itag");
+            }
+            if (sig == null) {
+                Log.e("Error: ", "null sig");
+            }
+            if (um == null) {
+                Log.e("Error: ", "null um");
+            }
+            if (itag != null && sig != null && um != null) {
+                foundArray.put(itag, URLDecoder.decode(um, "UTF-8") + "&"
+                        + "signature=" + sig);
+            }
+        }
+
+        if (foundArray.size() == 0) {
+            Log.e("Error: ","Couldn't find any URLs and corresponding signatures");
+            return null;
+        }
+
+        HashMap<String, Meta> typeMap = new HashMap<String, Meta>();
+        typeMap.put("13", new Meta("13", "3GP", "Low Quality - 176x144"));
+        typeMap.put("17", new Meta("17", "3GP", "Medium Quality - 176x144"));
+        typeMap.put("36", new Meta("36", "3GP", "High Quality - 320x240"));
+        typeMap.put("5", new Meta("5", "FLV", "Low Quality - 400x226"));
+        typeMap.put("6", new Meta("6", "FLV", "Medium Quality - 640x360"));
+        typeMap.put("34", new Meta("34", "FLV", "Medium Quality - 640x360"));
+        typeMap.put("35", new Meta("35", "FLV", "High Quality - 854x480"));
+        typeMap.put("43", new Meta("43", "WEBM", "Low Quality - 640x360"));
+        typeMap.put("44", new Meta("44", "WEBM", "Medium Quality - 854x480"));
+        typeMap.put("45", new Meta("45", "WEBM", "High Quality - 1280x720"));
+        typeMap.put("18", new Meta("18", "MP4", "Medium Quality - 480x360"));
+        typeMap.put("22", new Meta("22", "MP4", "High Quality - 1280x720"));
+        typeMap.put("37", new Meta("37", "MP4", "High Quality - 1920x1080"));
+        typeMap.put("33", new Meta("38", "MP4", "High Quality - 4096x230"));
+
+        ArrayList<VideoStream> videos = new ArrayList<VideoStream>();
+
+        for (String format : typeMap.keySet()) {
+            Meta meta = typeMap.get(format);
+
+            if (foundArray.containsKey(format)) {
+                VideoStream newVideo = new VideoStream(meta.ext, meta.type,
+                        foundArray.get(format));
+                videos.add(newVideo);
+                Log.i("Note: ","YouTube Video streaming details: ext:" + newVideo.ext
+                        + ", type:" + newVideo.type + ", url:" + newVideo.url);
+            }
+        }
+
+        return videos;
+    }
+
+    /*private void bz(String a) {
+        a = a.split("");
+        a = cz(a, 61);
+        a = cz(a, 5);
+        a = a.reverse();
+        a = a.slice(2);
+        a = cz(a, 69);
+        a = a.slice(2);
+        a = a.reverse();
+        return a.join("");
+    }cz(a, b) {
+        var c = a[0];
+        a[0] = a[b % a.length];
+        a[b] = c;
+        return a
+    };*/
+
+    private class YouTubePageStreamUriGetter extends
+            AsyncTask<String, String, String> {
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = ProgressDialog.show(getActivity(), "",
+                    "Connecting to YouTube...", true);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String url = params[0];
+            try {
+                ArrayList<VideoStream> videos = getStreamingUrisFromYouTubePage(url);
+                if (videos != null && !videos.isEmpty()) {
+                    String retVidUrl = null;
+                    for (VideoStream video : videos) {
+                        if (video.ext.toLowerCase().contains("mp4")
+                                && video.type.toLowerCase().contains("medium")) {
+                            retVidUrl = video.url;
+                            break;
+                        }
+                    }
+                    if (retVidUrl == null) {
+                        for (VideoStream video : videos) {
+                            if (video.ext.toLowerCase().contains("3gp")
+                                    && video.type.toLowerCase().contains(
+                                    "medium")) {
+                                retVidUrl = video.url;
+                                break;
+
+                            }
+                        }
+                    }
+                    if (retVidUrl == null) {
+
+                        for (VideoStream video : videos) {
+                            if (video.ext.toLowerCase().contains("mp4")
+                                    && video.type.toLowerCase().contains("low")) {
+                                retVidUrl = video.url;
+                                break;
+
+                            }
+                        }
+                    }
+                    if (retVidUrl == null) {
+                        for (VideoStream video : videos) {
+                            if (video.ext.toLowerCase().contains("3gp")
+                                    && video.type.toLowerCase().contains("low")) {
+                                retVidUrl = video.url;
+                                break;
+                            }
+                        }
+                    }
+
+                    return retVidUrl;
                 }
+            } catch (Exception e) {
+                Log.e("Error: ","Couldn't get YouTube streaming URL", e);
             }
+            Log.e("Error: ","Couldn't get stream URI for " + url);
+            return null;
         }
 
-        //Find out the URI string from the parameters
+        @Override
+        protected void onPostExecute(String streamingUrl) {
+            super.onPostExecute(streamingUrl);
+            progressDialog.dismiss();
+            if (streamingUrl != null) {
+                MyActivity.mediaPlayer.stop();
 
-        //Populate the list of formats for the video
-        String lFmtList = URLDecoder.decode(lArgMap.get("fmt_list"));
-        ArrayList<Format> lFormats = new ArrayList<Format>();
-        if(null != lFmtList){
-            String lFormatStrs[] = lFmtList.split(",");
+                MyActivity.mediaPlayer = new MediaPlayer();
 
-            for(String lFormatStr : lFormatStrs){
-                Format lFormat = new Format(lFormatStr);
-                lFormats.add(lFormat);
-            }
-        }
+                MyActivity.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-        //Populate the list of streams for the video
-        String lStreamList = lArgMap.get("url_encoded_fmt_stream_map");
-        if(null != lStreamList){
-            String lStreamStrs[] = lStreamList.split(",");
-            ArrayList<VideoStream> lStreams = new ArrayList<VideoStream>();
-            for(String lStreamStr : lStreamStrs){
-                VideoStream lStream = new VideoStream(lStreamStr);
-                lStreams.add(lStream);
-            }
+                System.out.println("WHY IS THIS: " + streamingUrl);
 
-            //Search for the given format in the list of video formats
-            // if it is there, select the corresponding stream
-            // otherwise if fallback is requested, check for next lower format
-            int lFormatId = Integer.parseInt(pYouTubeFmtQuality);
-
-            Format lSearchFormat = new Format(lFormatId);
-            while(!lFormats.contains(lSearchFormat) && pFallback ){
-                int lOldId = lSearchFormat.getId();
-                int lNewId = getSupportedFallbackId(lOldId);
-
-                if(lOldId == lNewId){
-                    break;
+                try{
+                    MyActivity.mediaPlayer.setDataSource(getActivity(), Uri.parse(streamingUrl));
+                    MyActivity.mediaPlayer.prepare();
                 }
-                lSearchFormat = new Format(lNewId);
+                catch (IOException e){};
+                MyActivity.mediaPlayer.start();
             }
-
-            int lIndex = lFormats.indexOf(lSearchFormat);
-            if(lIndex >= 0){
-                VideoStream lSearchStream = lStreams.get(lIndex);
-                lUriStr = lSearchStream.getUrl();
-            }
-
         }
-        //Return the URI string. It may be null if the format (or a fallback format if enabled)
-        // is not found in the list of formats for the video
-        return lUriStr;
     }
 }
+
+
+
+
+
+
+
+
+
+
