@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +53,10 @@ public class VideoListFragment extends Fragment {
     final ArrayList<Video> searchArray = new ArrayList<Video>();
     private SwipeListView swipeListView;
     private String queryTerm;
+    MyActivity myActivity;
+    public VideoListFragment(){
+        myActivity = (MyActivity) getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,7 +81,8 @@ public class VideoListFragment extends Fragment {
 
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                return false;
+                return true;
+
             }
 
             @Override
@@ -124,6 +130,7 @@ public class VideoListFragment extends Fragment {
 
             @Override
             public void onClickBackView(int position) {
+
                 Log.d("swipe", String.format("onClickBackView %d", position));
             }
 
@@ -137,6 +144,8 @@ public class VideoListFragment extends Fragment {
         });
 
         swipeListView.setAdapter(videoAdapter);
+        swipeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
         if (getArguments() == null) {
             queryTerm = "thisnameisafail prototype";
         }
@@ -242,6 +251,5 @@ public class VideoListFragment extends Fragment {
 
         System.out.println("SWIPELISTVIEW");
     }
-
 
 }

@@ -22,6 +22,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,6 +58,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 
 import com.app.musicplayer.Custom.TypeFaceSpan;
 
@@ -223,6 +225,7 @@ public class MyActivity extends ActionBarActivity{
 
         return super.onOptionsItemSelected(item);
     }
+
     public void playSong(View view) {
         playing = !playing;
         ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
@@ -298,6 +301,9 @@ public class MyActivity extends ActionBarActivity{
         }
         catch (FileNotFoundException e){}
         catch (IOException e){}
+
+    }
+    public void showAddPopup(View v) {
 
     }
     public class DrawerItemClickListener implements AdapterView.OnItemClickListener{

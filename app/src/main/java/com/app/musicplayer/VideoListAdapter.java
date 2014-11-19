@@ -56,7 +56,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
         int pixels = (int) (dps * scale + 0.5f);
         textView.setHeight(pixels);
         textView.setPadding(0,0,0,0);
-
+        convertView.setTag(position);
         Button playButton = (Button) convertView.findViewById(R.id.example_row_b_action_1);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override

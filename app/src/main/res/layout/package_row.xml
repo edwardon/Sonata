@@ -36,7 +36,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/example_row_b_action_3"
             style="@style/ListButtonAction"
-            android:text="@string/playlist"/>
+            android:text="@string/playlist"
+            android:onClick = "showAddPopup"/>
     </LinearLayout>
     <RelativeLayout
         android:orientation="vertical"
