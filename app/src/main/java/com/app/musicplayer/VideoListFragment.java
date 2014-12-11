@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -179,7 +180,7 @@ public class VideoListFragment extends Fragment {
             //queryTerm = "thisnameisafail prototype";
 
             // Define the API request for retrieving search results.
-            YouTube.Search.List search = youtube.search().list("id,snippet");
+            YouTube.Search.List search =youtube.search().list("id,snippet");
 
             // Set your developer key from the Google Developers Console for
             // non-authenticated requests. See:

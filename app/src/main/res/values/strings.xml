@@ -38,6 +38,11 @@
     <string name="loading">Loading</string>
     <string name="newTag">New!</string>
     <string name="discard">Discard</string>
-
+    <string name = "choose_playlist">Choose A Playlist</string>
+    <string name="song_title">Title</string>
+    <string name="song_artist">Artist</string>
+    <string name="song_details">Song Details</string>
+    <string name="name_confirm">OK</string>
+    <string name = "cancel"> cancel</string>
 
 </resources>

@@ -37,8 +37,9 @@ public class PlayListItemsFragment extends Fragment {
         TextView textView = (TextView) rootView.findViewById(R.id.playlist_name_textview);
         textView.setText(name);
 
-        final ArrayList<String> songNames = new ArrayList<String>();
+        final ArrayList<Song> songNames = new ArrayList<Song>();
         songsHashMap = new HashMap<String,String>();
+
 
         int num = getArguments().getInt("playlists",0);
         if (num!=0){
@@ -51,11 +52,13 @@ public class PlayListItemsFragment extends Fragment {
 
 
                     String line = scanner.nextLine();
-                    String songTitle ="",songId = "";
+                    String songTitle ="",songId = "",artist ="";
                     while (scanner.hasNextLine()){
                         songTitle = scanner.nextLine();
+                        artist = scanner.nextLine();
                         songId = scanner.nextLine();
-                        songNames.add(songTitle);
+                        Song s = new Song (songTitle,artist);
+                        songNames.add(s);
                         songsHashMap.put(songTitle, songId);
                     }
 

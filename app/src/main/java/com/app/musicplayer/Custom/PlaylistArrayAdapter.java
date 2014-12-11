@@ -28,9 +28,11 @@ public class PlaylistArrayAdapter extends ArrayAdapter<String> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.playlist_list_item,parent, false);
         }
         // Lookup view for data population
+
         TextView playlistTextView = (TextView) convertView.findViewById(R.id.playlist_item_textview);
         // Populate the data into the template view using the data object
         playlistTextView.setText(name);
+
         // Return the completed view to render on screen
         return convertView;
     }

@@ -8,29 +8,35 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.app.musicplayer.R;
+import com.app.musicplayer.Song;
 
 import java.util.List;
 
 /**
  * Created by Yuwei on 2014-11-15.
  */
-public class MusicArrayAdapter extends ArrayAdapter<String> {
+public class MusicArrayAdapter extends ArrayAdapter<Song> {
 
-    public MusicArrayAdapter(Context context, int resource, List<String> objects) {
-        super(context, resource, objects);
+    public MusicArrayAdapter(Context context, int resource, List<Song> objects) {
+        super(context, resource,objects);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        String name = getItem(position);
+        Song song = getItem(position);
+        String name = song.title;
+        String artist = song.artist;
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.music_list_item,parent, false);
         }
         // Lookup view for data population
-        TextView playlistTextView = (TextView) convertView.findViewById(R.id.music_list_item);
+        TextView songTextView = (TextView) convertView.findViewById(R.id.music_list_item);
         // Populate the data into the template view using the data object
-        playlistTextView.setText(name);
+        songTextView.setText(name);
+        TextView artistTextView = (TextView) convertView.findViewById(R.id.artist_list_item);
+        // Populate the data into the template view using the data object
+        artistTextView.setText(artist);
         // Return the completed view to render on screen
         return convertView;
     }

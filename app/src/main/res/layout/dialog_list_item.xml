@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<com.app.musicplayer.Custom.FontTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom = "http://schemas.android.com/apk/res-auto"
+    custom:fontName="SourceSansPro-Light.otf"
+    android:layout_marginLeft="40dp"
+    android:layout_marginRight="40dp"
+android:paddingLeft = "10dp"
+android:paddingRight = "10dp"
+    android:layout_width="match_parent"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:layout_height = "50dp"
+    android:id="@+id/dialog_list_item"
+    android:textColor="#616161"
+    android:gravity="center_vertical"
+    android:singleLine="true"
+    android:ellipsize="end"
+    android:lines="1"/>

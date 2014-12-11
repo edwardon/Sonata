@@ -13,6 +13,7 @@
     android:textColor="#616161"
     custom:fontName="SourceSansPro-Light.otf"
     android:gravity="center_vertical"
+    android:textAppearance="?android:attr/textAppearanceMedium"
     android:background="?android:attr/activatedBackgroundIndicator"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:text = "Hello"

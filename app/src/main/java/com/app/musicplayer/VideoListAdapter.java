@@ -1,8 +1,10 @@
 package com.app.musicplayer;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Context;
 
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -69,6 +71,14 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 fragment.setArguments(bundle);
 
                 fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
+            }
+        });
+        Button addButton = (Button) convertView.findViewById(R.id.example_row_b_action_3);
+        addButton.setOnClickListener(new View.OnClickListener(){
+            MyActivity myActivity = (MyActivity) getContext();
+            @Override
+            public void onClick(View v) {
+                myActivity.showAddPopup(v,item.videoTitle, item.videoID);
             }
         });
 

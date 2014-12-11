@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+    <com.app.musicplayer.Custom.FontTextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        custom:fontName="SourceSansPro-Regular.otf"
+        android:textColor="@color/white"
+        android:text="@string/choose_playlist"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:background="@color/teal"
+        android:paddingLeft = "10dp"
+        android:paddingRight = "10dp"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_listview"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>
