@@ -1,57 +1,45 @@
-package com.app.musicplayer;
+package com.app.musicplayer.UI;
 
 import android.app.Fragment;
 
 /**
  * Created by Edward Onochie on 14/11/14.
  */
-import android.app.ListFragment;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ActionMode;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.api.client.auth.oauth2.Credential;
+import com.app.musicplayer.Custom.Swipe.BaseSwipeListViewListener;
+import com.app.musicplayer.Custom.Swipe.SwipeListView;
+import com.app.musicplayer.Custom.VideoListAdapter;
+import com.app.musicplayer.R;
+import com.app.musicplayer.Util.Auth;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
-
 
 
 public class VideoListFragment extends Fragment {
     private static final long NUMBER_OF_VIDEOS_RETURNED = 50;
     private static YouTube youtube;
     private VideoListAdapter videoAdapter;
-    final ArrayList<Video> searchArray = new ArrayList<Video>();
+    final ArrayList<com.app.musicplayer.Custom.Objects.Video> searchArray = new ArrayList<com.app.musicplayer.Custom.Objects.Video>();
     private SwipeListView swipeListView;
     private String queryTerm;
     MyActivity myActivity;
@@ -231,7 +219,7 @@ public class VideoListFragment extends Fragment {
             // item will not contain a video ID.
             if (rId.getKind().equals("youtube#video")) {
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
-                searchArray.add(new Video(rId.getVideoId(),singleVideo.getSnippet().getTitle()));
+                searchArray.add(new com.app.musicplayer.Custom.Objects.Video(rId.getVideoId(),singleVideo.getSnippet().getTitle()));
 
                 System.out.println(" Video Id: " + rId.getVideoId());
 

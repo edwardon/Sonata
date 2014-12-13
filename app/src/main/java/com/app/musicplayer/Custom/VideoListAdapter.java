@@ -1,12 +1,9 @@
-package com.app.musicplayer;
+package com.app.musicplayer.Custom;
 
-import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Context;
 
-import android.content.DialogInterface;
 import android.graphics.Typeface;
-import android.util.TypedValue;
 import android.view.Gravity;
 
 import android.os.Bundle;
@@ -16,10 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Attr;
+import com.app.musicplayer.Util.MediaFragment;
+import com.app.musicplayer.R;
+import com.app.musicplayer.UI.MyActivity;
+import com.app.musicplayer.Custom.Objects.Video;
 
 import java.util.ArrayList;
 import java.util.List;

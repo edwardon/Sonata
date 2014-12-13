@@ -1,4 +1,8 @@
-package com.app.musicplayer;
+package com.app.musicplayer.Custom.Swipe;
+
+import com.app.musicplayer.Custom.Swipe.SwipeListView;
+import com.app.musicplayer.Custom.Swipe.SwipeListViewListener;
+
 public class BaseSwipeListViewListener implements SwipeListViewListener {
     @Override
     public void onOpened(int position, boolean toRight) {

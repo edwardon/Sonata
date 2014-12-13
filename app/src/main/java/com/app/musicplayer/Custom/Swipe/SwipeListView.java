@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.app.musicplayer;
+package com.app.musicplayer.Custom.Swipe;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -30,6 +30,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import com.app.musicplayer.R;
 
 import java.util.List;
 

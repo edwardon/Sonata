@@ -1,61 +1,68 @@
-package com.app.musicplayer;
+package com.app.musicplayer.UI;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.app.musicplayer.Custom.PlaylistArrayAdapter;
+import com.app.musicplayer.Custom.MusicArrayAdapter;
+import com.app.musicplayer.Util.MediaFragment;
+import com.app.musicplayer.R;
+import com.app.musicplayer.Custom.Objects.Song;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
- * Created by Yuwei on 2014-11-14.
+ * Created by Yuwei on 2014-11-15.
  */
-public class PlaylistFragment extends Fragment {
-    Context mContext;
-    public PlaylistFragment(){
-        mContext = getActivity();
-    }
+public class PlayListItemsFragment extends Fragment {
 
-    @Override
+    private Context mContext;
+    HashMap<String,String> songsHashMap;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.v("PlaylistFragment", "is being created");
-        View rootView = inflater.inflate(R.layout.fragment_playlist,container, false);
-        ListView listView = (ListView) rootView.findViewById(R.id.playlist_listview);
+        mContext = getActivity();
+        String name = getArguments().getString("name");
 
-        ArrayList<String> playlistNames = new ArrayList<String>();
+        View rootView = inflater.inflate(R.layout.fragment_playlist_items, container, false);
+        TextView textView = (TextView) rootView.findViewById(R.id.playlist_name_textview);
+        textView.setText(name);
+
+        final ArrayList<Song> songNames = new ArrayList<Song>();
+        songsHashMap = new HashMap<String,String>();
+
 
         int num = getArguments().getInt("playlists",0);
         if (num!=0){
             try {
                 //InputStream inputStream = mContext.openFileInput("playlist.txt");
                 for (int i=0; i<num; i++){
-                    Log.v("num is",""+num);
+                    Log.v("num is", "" + num);
                     FileReader reader = new FileReader ("/data/data/com.app.musicplayer/files/playlist"+i+".txt");
                     Scanner scanner = new Scanner (reader);
 
 
                     String line = scanner.nextLine();
-                    playlistNames.add(line);
+                    String songTitle ="",songId = "",artist ="";
+                    while (scanner.hasNextLine()){
+                        songTitle = scanner.nextLine();
+                        artist = scanner.nextLine();
+                        songId = scanner.nextLine();
+                        Song s = new Song (songTitle,artist);
+                        songNames.add(s);
+                        songsHashMap.put(songTitle, songId);
+                    }
+
 //                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 //                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 //                    String receiveString = "";
@@ -78,38 +85,26 @@ public class PlaylistFragment extends Fragment {
 
         }
 
-        //sample bullshit
-
-
-
-        PlaylistArrayAdapter mArrayAdapter = new PlaylistArrayAdapter(getActivity(), R.id.playlist_listview, playlistNames);
-
-        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
+        MusicArrayAdapter mArrayAdapter = new MusicArrayAdapter(getActivity(), R.id.playlist_name_listview, songNames);
+        ListView listView = (ListView) rootView.findViewById(R.id.playlist_name_listview);
+        listView.setAdapter(mArrayAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             FragmentManager fragmentManager;
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 fragmentManager = getFragmentManager();
-                PlayListItemsFragment fragment = new PlayListItemsFragment();
+                MediaFragment fragment = new MediaFragment();
+                String name = ((TextView) view.findViewById(R.id.music_list_item)).getText().toString();
+                String songId = songsHashMap.get(name);
                 Bundle args = new Bundle();
+                args.putString("video_id", songId);
 
-                String name = ((TextView) view.findViewById(R.id.playlist_item_textview)).getText().toString();
-                args.putString("name", name);
 
-                int num = getArguments().getInt("playlists",0);
-                args.putInt("playlists",num);
                 fragment.setArguments(args);
                 fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();
             }
         });
-
-        listView.setAdapter(mArrayAdapter);
-
         return rootView;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 }

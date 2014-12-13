@@ -1,4 +1,4 @@
-package com.app.musicplayer;
+package com.app.musicplayer.Custom.Objects;
 
 /**
  * Created by Yuwei on 2014-12-11.

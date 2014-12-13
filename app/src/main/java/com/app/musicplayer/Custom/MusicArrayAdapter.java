@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.app.musicplayer.R;
-import com.app.musicplayer.Song;
+import com.app.musicplayer.Custom.Objects.Song;
 
 import java.util.List;
 

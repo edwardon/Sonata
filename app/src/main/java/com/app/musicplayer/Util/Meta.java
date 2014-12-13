@@ -1,4 +1,4 @@
-package com.app.musicplayer;
+package com.app.musicplayer.Util;
 
 /**
  * Created by edward on 18/11/14.

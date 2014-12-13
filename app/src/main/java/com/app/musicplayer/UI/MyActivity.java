@@ -1,15 +1,9 @@
-package com.app.musicplayer;
+package com.app.musicplayer.UI;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.net.Uri;
 import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
@@ -25,7 +19,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,28 +29,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URLDecoder;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.Vector;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.app.Activity;
-import android.app.ProgressDialog;
 
 import android.util.Log;
 import android.view.View;
@@ -67,11 +43,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.app.musicplayer.Custom.AddDialogFragment;
+
 import com.app.musicplayer.Custom.TypeFaceSpan;
+import com.app.musicplayer.R;
 
 
 public class MyActivity extends ActionBarActivity{

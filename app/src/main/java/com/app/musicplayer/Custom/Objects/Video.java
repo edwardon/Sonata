@@ -1,4 +1,4 @@
-package com.app.musicplayer;
+package com.app.musicplayer.Custom.Objects;
 
 /**
  * Created by Edward Onochie on 15/11/14.

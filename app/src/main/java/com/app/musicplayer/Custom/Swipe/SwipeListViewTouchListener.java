@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-package com.app.musicplayer;
+package com.app.musicplayer.Custom.Swipe;
 
 import android.graphics.Rect;
 import android.os.Build;
