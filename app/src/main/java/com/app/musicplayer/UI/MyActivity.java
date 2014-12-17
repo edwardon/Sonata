@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.ActionBarDrawerToggle;
 
 import android.support.v4.widget.DrawerLayout;
@@ -48,6 +49,7 @@ import android.widget.TextView;
 
 import com.app.musicplayer.Custom.TypeFaceSpan;
 import com.app.musicplayer.R;
+import com.app.musicplayer.Util.SongSuggestionProvider;
 
 
 public class MyActivity extends ActionBarActivity{
@@ -143,6 +145,12 @@ public class MyActivity extends ActionBarActivity{
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
+
+            // Save the query.
+            SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+                    SongSuggestionProvider.AUTHORITY, SongSuggestionProvider.MODE);
+            suggestions.saveRecentQuery(query, null);
+
             Fragment fragment = new VideoListFragment();
             Bundle bundle = new Bundle();
             bundle.putString("query",query);
@@ -169,6 +177,14 @@ public class MyActivity extends ActionBarActivity{
 
 
     }
+
+    // Call this to clear the search history, TODO: add a button in menu for this.
+    public void clearHistory() {
+        SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+                SongSuggestionProvider.AUTHORITY, SongSuggestionProvider.MODE);
+        suggestions.clearHistory();
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
