@@ -41,7 +41,7 @@ import com.google.api.services.youtube.model.*;
 
 
 public class VideoListFragment extends Fragment {
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 50;
+    private static final long NUMBER_OF_VIDEOS_RETURNED = 20;
     private static YouTube youtube;
     private VideoListAdapter videoAdapter;
     final ArrayList<com.app.musicplayer.Custom.Objects.Video> searchArray = new ArrayList<com.app.musicplayer.Custom.Objects.Video>();
