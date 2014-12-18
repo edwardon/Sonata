@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.musicplayer.Util.MediaFragment;
@@ -46,8 +47,8 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
         TextView textView = (TextView) convertView.findViewById(R.id.example_row_tv_title);
         textView.setText(item.videoTitle);
 
-
-
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.thumbnail_image);
+        imageView.setImageBitmap(item.thumbNail);
         openFont = Typeface.createFromAsset(getContext().getAssets(), "SourceSansPro-Light.otf");
 
         textView.setTypeface(openFont);

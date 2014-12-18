@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -115,6 +116,7 @@ public class MyActivity extends ActionBarActivity{
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,Gravity.START);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);

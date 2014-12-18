@@ -56,6 +56,10 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:lines="1"/>
+        <ImageView
+            android:layout_width="480dp"
+            android:layout_height="360dp"
+            android:id="@+id/thumbnail_image"/>
         <!--<TextView-->
             <!--android:layout_width="fill_parent"-->
             <!--android:layout_height="wrap_content"-->

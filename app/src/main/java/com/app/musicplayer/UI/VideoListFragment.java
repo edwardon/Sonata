@@ -5,6 +5,8 @@ import android.app.Fragment;
 /**
  * Created by Edward Onochie on 14/11/14.
  */
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,9 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -219,7 +224,18 @@ public class VideoListFragment extends Fragment {
             // item will not contain a video ID.
             if (rId.getKind().equals("youtube#video")) {
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
-                searchArray.add(new com.app.musicplayer.Custom.Objects.Video(rId.getVideoId(),singleVideo.getSnippet().getTitle()));
+                // Get the Image URL
+                String imageStr = "http://img.youtube.com/vi/" + rId.getVideoId() + "/0.jpg";
+                Bitmap image = null;
+                // Actually load the image.
+                try {
+                    URL imageUrl = new URL(imageStr);
+                    image = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                searchArray.add(new com.app.musicplayer.Custom.Objects.Video(rId.getVideoId(),singleVideo.getSnippet().getTitle(),image));
 
                 System.out.println(" Video Id: " + rId.getVideoId());
 
