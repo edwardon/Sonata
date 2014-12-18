@@ -292,7 +292,8 @@ public class MediaFragment extends Fragment {
             super.onPostExecute(streamingUrl);
             progressDialog.dismiss();
             if (streamingUrl != null) {
-                MyActivity.mediaPlayer.stop();
+                if (MyActivity.mediaPlayer != null)
+                    MyActivity.mediaPlayer.stop();
 
                 MyActivity.mediaPlayer = new MediaPlayer();
 
@@ -306,6 +307,7 @@ public class MediaFragment extends Fragment {
                 }
                 catch (IOException e){};
                 MyActivity.mediaPlayer.start();
+                ((MyActivity) getActivity()).getController().show(0);
             }
         }
     }

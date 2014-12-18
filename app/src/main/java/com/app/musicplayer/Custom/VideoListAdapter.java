@@ -4,11 +4,13 @@ import android.app.FragmentManager;
 import android.content.Context;
 
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.view.Gravity;
 
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -67,7 +69,11 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 Bundle bundle = new Bundle();
                 MediaFragment fragment = new MediaFragment();
                 bundle.putString("video_id",item.videoID);
-                ((MyActivity) context).playSong(view);
+                /*((MyActivity) context).playSong(view);
+                if (MyActivity.mediaPlayer == null) {
+                    MyActivity.mediaPlayer = new MediaPlayer();
+                }
+                MyActivity.mediaPlayer.start();*/
                 fragment.setArguments(bundle);
 
                 fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();

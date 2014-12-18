@@ -38,6 +38,7 @@ import java.util.Scanner;
 import android.media.MediaPlayer;
 
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -45,6 +46,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.TextView;
 
 
@@ -53,14 +55,17 @@ import com.app.musicplayer.R;
 import com.app.musicplayer.Util.SongSuggestionProvider;
 
 
-public class MyActivity extends ActionBarActivity{
+public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     int numPlaylists;
     private ActionBarDrawerToggle mDrawerToggle;
     private final String PLAYLIST = "PLAYLIST";
     private final String PLAYLIST_NAMES = "PLAYLIST_NAMES";
-    public static MediaPlayer mediaPlayer = new MediaPlayer();
+    public static MediaPlayer mediaPlayer = null;
+
+    private MediaController controller;
+
     SharedPreferences mPrefs;
     static boolean playing = false;
     HashSet<String> playlistNames;
@@ -126,7 +131,7 @@ public class MyActivity extends ActionBarActivity{
             numPlaylists = mPrefs.getInt(PLAYLIST, 0);
 
         }
-       else{
+        else{
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putInt(PLAYLIST, 0);
             editor.apply();
@@ -172,12 +177,10 @@ public class MyActivity extends ActionBarActivity{
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
 
-
-
-
-// Update the action bar title with the TypefaceSpan instance
-
-
+        controller = new MediaController(this);
+        controller.setAnchorView(findViewById(R.id.main_linearlayout));
+        controller.setMediaPlayer(this);
+        controller.setEnabled(true);
     }
 
     // Call this to clear the search history, TODO: add a button in menu for this.
@@ -187,6 +190,13 @@ public class MyActivity extends ActionBarActivity{
         suggestions.clearHistory();
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        controller.show(0);
+        return true;
+    }
+
+    public MediaController getController() { return controller; }
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
@@ -216,7 +226,7 @@ public class MyActivity extends ActionBarActivity{
         MenuItem searchMenuItem = menu.findItem(R.id.search);
         SearchView searchView =
                 (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-       searchView.setSearchableInfo(
+        searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
         SearchView.SearchAutoComplete theTextArea = (SearchView.SearchAutoComplete)searchView.findViewById(R.id.search_src_text);
@@ -241,28 +251,6 @@ public class MyActivity extends ActionBarActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    public void playSong(View view) {
-        playing = !playing;
-        ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
-        ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
-        if (playing){
-
-            mediaPlayer.start();
-            playButton.setEnabled(false);
-            playButton.setVisibility(View.INVISIBLE);
-            pauseButton.setEnabled(true);
-            pauseButton.setVisibility(View.VISIBLE);
-
-        }
-        else{
-            mediaPlayer.pause();
-            playButton.setEnabled(true);
-            pauseButton.setEnabled(false);
-            playButton.setVisibility(View.VISIBLE);
-            pauseButton.setVisibility(View.INVISIBLE);
-        }
-
-    }
     public void addToPlaylistTest(){
         int numPlaylists = 1;
         for (int i=0; i<1; i++){
@@ -417,6 +405,65 @@ public class MyActivity extends ActionBarActivity{
                 });
         builder.show();
     }
+
+    @Override
+    public void start() {
+        if (mediaPlayer != null) mediaPlayer.start();
+    }
+
+    @Override
+    public void pause() {
+        if (mediaPlayer != null) mediaPlayer.pause();
+    }
+
+    @Override
+    public int getDuration() {
+        if (mediaPlayer != null) return mediaPlayer.getDuration();
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if (mediaPlayer != null) return mediaPlayer.getCurrentPosition();
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int i) {
+        if (mediaPlayer != null) mediaPlayer.seekTo(i);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        if (mediaPlayer != null) return mediaPlayer.isPlaying();
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
+    }
+
     public class DrawerItemClickListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -475,4 +522,3 @@ public class MyActivity extends ActionBarActivity{
     }
 
 }
-
