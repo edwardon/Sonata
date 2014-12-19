@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.app.musicplayer.UI.MusicMediaController;
 import com.app.musicplayer.Util.MediaFragment;
 import com.app.musicplayer.R;
 import com.app.musicplayer.UI.MyActivity;
@@ -68,6 +69,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
                 Bundle bundle = new Bundle();
                 MediaFragment fragment = new MediaFragment();
+                ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(item.videoTitle);
                 bundle.putString("video_id",item.videoID);
                 /*((MyActivity) context).playSong(view);
                 if (MyActivity.mediaPlayer == null) {

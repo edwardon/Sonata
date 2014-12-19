@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.app.musicplayer.Custom.Objects.VideoStream;
+import com.app.musicplayer.UI.MusicMediaController;
 import com.app.musicplayer.UI.MyActivity;
 
 import org.apache.http.HttpResponse;
@@ -308,6 +309,7 @@ public class MediaFragment extends Fragment {
                 catch (IOException e){};
                 MyActivity.mediaPlayer.start();
                 ((MyActivity) getActivity()).getController().show(0);
+
             }
         }
     }

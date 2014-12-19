@@ -9,4 +9,9 @@
         compat:actionViewClass="android.support.v7.widget.SearchView"
         compat:showAsAction="always"
      />
+    <item
+        android:id="@+id/clear_history"
+        android:title="@string/clear_history"
+        compat:showAsAction="never"
+        />
 </menu>

@@ -64,7 +64,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     private final String PLAYLIST_NAMES = "PLAYLIST_NAMES";
     public static MediaPlayer mediaPlayer = null;
 
-    private MediaController controller;
+    private MusicMediaController controller;
 
     SharedPreferences mPrefs;
     static boolean playing = false;
@@ -177,13 +177,13 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
 
-        controller = new MediaController(this);
+        controller = new MusicMediaController(this);
         controller.setAnchorView(findViewById(R.id.main_linearlayout));
         controller.setMediaPlayer(this);
         controller.setEnabled(true);
     }
 
-    // Call this to clear the search history, TODO: add a button in menu for this.
+    // Call this to clear the search history
     public void clearHistory() {
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
                 SongSuggestionProvider.AUTHORITY, SongSuggestionProvider.MODE);
@@ -246,7 +246,10 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle your other action bar items...
+        if (item.getItemId() == R.id.clear_history) {
+            clearHistory();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
