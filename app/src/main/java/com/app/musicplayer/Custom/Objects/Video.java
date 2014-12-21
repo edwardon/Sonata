@@ -12,10 +12,12 @@ public class Video {
     public String videoID;
     public String videoTitle;
     public Bitmap thumbNail;
+    public String videoDescription;
 
-    public Video(String videoID, String videoTitle,Bitmap thumbNail) {
+    public Video(String videoID, String videoTitle,Bitmap thumbNail,String videoDescription) {
         this.videoID = videoID;
         this.videoTitle = videoTitle;
         this.thumbNail = thumbNail;
+        this.videoDescription= videoDescription;
     }
 }

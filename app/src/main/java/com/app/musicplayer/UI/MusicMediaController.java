@@ -12,8 +12,10 @@ import com.app.musicplayer.R;
  */
 
 public class MusicMediaController extends MediaController {
+    String title;
     public MusicMediaController(Context context) {
         super(context);
+        title = "";
     }
     @Override
     public void setAnchorView(View view) {
@@ -27,5 +29,9 @@ public class MusicMediaController extends MediaController {
     public void setSongTitle(String title) {
         TextView tvSongTitle = (TextView) findViewById(R.id.songTitleView);
         tvSongTitle.setText(title);
+        this.title = title;
+    }
+    public String getTitle(){
+        return title;
     }
 }

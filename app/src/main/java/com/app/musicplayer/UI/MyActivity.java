@@ -2,6 +2,11 @@ package com.app.musicplayer.UI;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.app.FragmentManager;
@@ -15,6 +20,7 @@ import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.ActionBarDrawerToggle;
 
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
@@ -47,11 +53,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.MediaController;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 
 import com.app.musicplayer.Custom.TypeFaceSpan;
 import com.app.musicplayer.R;
+import com.app.musicplayer.Util.MusicNotificationActivity;
 import com.app.musicplayer.Util.SongSuggestionProvider;
 
 
@@ -62,6 +70,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     private ActionBarDrawerToggle mDrawerToggle;
     private final String PLAYLIST = "PLAYLIST";
     private final String PLAYLIST_NAMES = "PLAYLIST_NAMES";
+    private final int notifId = 1;
     public static MediaPlayer mediaPlayer = null;
 
     private MusicMediaController controller;
@@ -182,7 +191,43 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         controller.setMediaPlayer(this);
         controller.setEnabled(true);
     }
+    public void updateNotification(String title){
+        Intent resultIntent = new Intent(this, MyActivity.class);
 
+// This ensures that the back button follows the recommended
+// convention for the back key.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MyActivity.class);
+
+// Adds the Intent that starts the Activity to the top of the stack.
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+// Create remote view and set bigContentView.
+        RemoteViews expandedView = new RemoteViews(this.getPackageName(),
+                R.layout.notification);
+        expandedView.setTextViewText(R.id.notif_textView, title);
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setAutoCancel(true)
+                .setContentIntent(resultPendingIntent)
+                .setContentTitle("Now Playing")
+                .setContentInfo(title).build();
+
+        notification.bigContentView = expandedView;
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        Intent switchIntent = new Intent("com.example.app.ACTION_PLAY");
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, switchIntent,0);
+//
+//
+//        expandedView.setOnClickPendingIntent(R.id.notif_playButton, pendingIntent);
+        mNotificationManager.notify(1, notification);
+    }
     // Call this to clear the search history
     public void clearHistory() {
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
@@ -411,7 +456,13 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 
     @Override
     public void start() {
-        if (mediaPlayer != null) mediaPlayer.start();
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
+            updateNotification(controller.getTitle());
+        }
+
+
+
     }
 
     @Override
@@ -523,5 +574,13 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 
         }
     }
-
+    public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equalsIgnoreCase("ACTION_PLAY")){
+                ((MyActivity)getParent()).pause();
+            }
+        }
+    }
 }

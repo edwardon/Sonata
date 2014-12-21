@@ -308,6 +308,7 @@ public class MediaFragment extends Fragment {
                 }
                 catch (IOException e){};
                 MyActivity.mediaPlayer.start();
+
                 ((MyActivity) getActivity()).getController().show(0);
 
             }
