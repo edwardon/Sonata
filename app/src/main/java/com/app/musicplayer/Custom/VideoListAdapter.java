@@ -3,6 +3,7 @@ package com.app.musicplayer.Custom;
 import android.app.FragmentManager;
 import android.content.Context;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.view.Gravity;
@@ -52,6 +53,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.thumbnail);
         imageView.setImageBitmap(item.thumbNail);
+        imageView.setColorFilter(Color.rgb(123, 123, 123), android.graphics.PorterDuff.Mode.MULTIPLY);
 //        openFont = Typeface.createFromAsset(getContext().getAssets(), "SourceSansPro-Light.otf");
 //
 //        textView.setTypeface(openFont);
