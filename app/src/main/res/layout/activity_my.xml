@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:orientation = "vertical"
         android:id="@+id/main_linearlayout">
-
     </LinearLayout>
 
     <ListView android:id="@+id/left_drawer"

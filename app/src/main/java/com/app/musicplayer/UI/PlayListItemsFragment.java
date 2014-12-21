@@ -29,11 +29,10 @@ import java.util.Scanner;
 public class PlayListItemsFragment extends Fragment {
 
     private Context context;
-    HashMap<String,String> songsHashMap;
-
     public PlayListItemsFragment(){
         context = getActivity();
     }
+    HashMap<String,String> songsHashMap;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = getActivity();
         String name = getArguments().getString("name");
@@ -101,16 +100,12 @@ public class PlayListItemsFragment extends Fragment {
                 MediaFragment fragment = new MediaFragment();
                 String name = ((TextView) view.findViewById(R.id.music_list_item)).getText().toString();
                 String songId = songsHashMap.get(name);
-                if (context!= null){
-                    ((MyActivity) context).playSong(view,name);
-                }
-
                 Bundle args = new Bundle();
                 args.putString("video_id", songId);
-
-
+                ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(name);
+                ((MyActivity) context).updateNotification(name);
                 fragment.setArguments(args);
-                fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
+                fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();
             }
         });
         return rootView;

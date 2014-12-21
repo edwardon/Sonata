@@ -2,9 +2,11 @@ package com.app.musicplayer.UI;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.app.FragmentManager;
@@ -42,6 +44,7 @@ import java.util.Scanner;
 import android.media.MediaPlayer;
 
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,22 +52,29 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.MediaController;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 
 import com.app.musicplayer.Custom.TypeFaceSpan;
 import com.app.musicplayer.R;
+import com.app.musicplayer.Util.MusicNotificationActivity;
 import com.app.musicplayer.Util.SongSuggestionProvider;
 
 
-public class MyActivity extends ActionBarActivity{
+public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     int numPlaylists;
     private ActionBarDrawerToggle mDrawerToggle;
     private final String PLAYLIST = "PLAYLIST";
     private final String PLAYLIST_NAMES = "PLAYLIST_NAMES";
-    public static MediaPlayer mediaPlayer = new MediaPlayer();
+    private final int notifId = 1;
+    public static MediaPlayer mediaPlayer = null;
+
+    private MusicMediaController controller;
+
     SharedPreferences mPrefs;
     static boolean playing = false;
     HashSet<String> playlistNames;
@@ -130,7 +140,7 @@ public class MyActivity extends ActionBarActivity{
             numPlaylists = mPrefs.getInt(PLAYLIST, 0);
 
         }
-       else{
+        else{
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putInt(PLAYLIST, 0);
             editor.apply();
@@ -176,52 +186,62 @@ public class MyActivity extends ActionBarActivity{
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
 
-
-
-
-
-// Update the action bar title with the TypefaceSpan instance
-
-
+        controller = new MusicMediaController(this);
+        controller.setAnchorView(findViewById(R.id.main_linearlayout));
+        controller.setMediaPlayer(this);
+        controller.setEnabled(true);
     }
-    public void updateNotification (String text){
-        int mId = 2;
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("Now Playing:")
-                        .setContentText(text);
-// Creates an explicit intent for an Activity in your app
+    public void updateNotification(String title){
         Intent resultIntent = new Intent(this, MyActivity.class);
 
-// The stack builder object will contain an artificial back stack for the
-// started Activity.
-// This ensures that navigating backward from the Activity leads out of
-// your application to the Home screen.
+// This ensures that the back button follows the recommended
+// convention for the back key.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
 // Adds the back stack for the Intent (but not the Intent itself)
         stackBuilder.addParentStack(MyActivity.class);
-// Adds the Intent that starts the Activity to the top of the stack
+
+// Adds the Intent that starts the Activity to the top of the stack.
         stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+// Create remote view and set bigContentView.
+        RemoteViews expandedView = new RemoteViews(this.getPackageName(),
+                R.layout.notification);
+        expandedView.setTextViewText(R.id.notif_textView, title);
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setAutoCancel(true)
+                .setContentIntent(resultPendingIntent)
+                .setContentTitle("Now Playing")
+                .setContentInfo(title).build();
+
+        notification.bigContentView = expandedView;
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-        mNotificationManager.notify(mId, mBuilder.build());
-        mBuilder.build();
+//        Intent switchIntent = new Intent("com.example.app.ACTION_PLAY");
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, switchIntent,0);
+//
+//
+//        expandedView.setOnClickPendingIntent(R.id.notif_playButton, pendingIntent);
+        mNotificationManager.notify(1, notification);
     }
-    // Call this to clear the search history, TODO: add a button in menu for this.
+    // Call this to clear the search history
     public void clearHistory() {
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
                 SongSuggestionProvider.AUTHORITY, SongSuggestionProvider.MODE);
         suggestions.clearHistory();
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        controller.show(0);
+        return true;
+    }
+
+    public MediaController getController() { return controller; }
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
@@ -251,7 +271,7 @@ public class MyActivity extends ActionBarActivity{
         MenuItem searchMenuItem = menu.findItem(R.id.search);
         SearchView searchView =
                 (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-       searchView.setSearchableInfo(
+        searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
         SearchView.SearchAutoComplete theTextArea = (SearchView.SearchAutoComplete)searchView.findViewById(R.id.search_src_text);
@@ -271,41 +291,14 @@ public class MyActivity extends ActionBarActivity{
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle your other action bar items...
+        if (item.getItemId() == R.id.clear_history) {
+            clearHistory();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
-    public void playSong (View view, String title){
-        updateNotification(title);
-        playSong(view);
-    }
 
-    public void playSong(View view) {
-        playing = !playing;
-        ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
-        ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
-        if (playing){
-            mediaPlayer.start();
-            if (playButton!=null && pauseButton!=null){ //depends on the fragment
-                playButton.setEnabled(false);
-                playButton.setVisibility(View.INVISIBLE);
-                pauseButton.setEnabled(true);
-                pauseButton.setVisibility(View.VISIBLE);
-
-            }
-
-        }
-        else{
-            mediaPlayer.pause();
-            if (playButton!=null && pauseButton!=null) {
-                playButton.setEnabled(true);
-                pauseButton.setEnabled(false);
-                playButton.setVisibility(View.VISIBLE);
-                pauseButton.setVisibility(View.INVISIBLE);
-            }
-        }
-
-    }
     public void addToPlaylistTest(){
         int numPlaylists = 1;
         for (int i=0; i<1; i++){
@@ -460,6 +453,71 @@ public class MyActivity extends ActionBarActivity{
                 });
         builder.show();
     }
+
+    @Override
+    public void start() {
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
+            updateNotification(controller.getTitle());
+        }
+
+
+
+    }
+
+    @Override
+    public void pause() {
+        if (mediaPlayer != null) mediaPlayer.pause();
+    }
+
+    @Override
+    public int getDuration() {
+        if (mediaPlayer != null) return mediaPlayer.getDuration();
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if (mediaPlayer != null) return mediaPlayer.getCurrentPosition();
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int i) {
+        if (mediaPlayer != null) mediaPlayer.seekTo(i);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        if (mediaPlayer != null) return mediaPlayer.isPlaying();
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
+    }
+
     public class DrawerItemClickListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -516,6 +574,13 @@ public class MyActivity extends ActionBarActivity{
 
         }
     }
-
+    public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equalsIgnoreCase("ACTION_PLAY")){
+                ((MyActivity)getParent()).pause();
+            }
+        }
+    }
 }
-

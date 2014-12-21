@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.app.musicplayer" >
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -30,6 +32,13 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <receiver android:name="com.app.musicplayer.UI.MyActivity$AudioPlayerBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="ACTION_PLAY" />
+            </intent-filter>
+        </receiver>
     </application>
+
+
 
 </manifest>
