@@ -28,10 +28,14 @@ import java.util.Scanner;
  */
 public class PlayListItemsFragment extends Fragment {
 
-    private Context mContext;
+    private Context context;
     HashMap<String,String> songsHashMap;
+
+    public PlayListItemsFragment(){
+        context = getActivity();
+    }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mContext = getActivity();
+        context = getActivity();
         String name = getArguments().getString("name");
 
         View rootView = inflater.inflate(R.layout.fragment_playlist_items, container, false);
@@ -97,12 +101,16 @@ public class PlayListItemsFragment extends Fragment {
                 MediaFragment fragment = new MediaFragment();
                 String name = ((TextView) view.findViewById(R.id.music_list_item)).getText().toString();
                 String songId = songsHashMap.get(name);
+                if (context!= null){
+                    ((MyActivity) context).playSong(view,name);
+                }
+
                 Bundle args = new Bundle();
                 args.putString("video_id", songId);
 
 
                 fragment.setArguments(args);
-                fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();
+                fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
             }
         });
         return rootView;

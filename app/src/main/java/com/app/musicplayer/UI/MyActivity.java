@@ -2,6 +2,9 @@ package com.app.musicplayer.UI;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.app.FragmentManager;
@@ -15,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.ActionBarDrawerToggle;
 
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
@@ -175,11 +179,42 @@ public class MyActivity extends ActionBarActivity{
 
 
 
+
 // Update the action bar title with the TypefaceSpan instance
 
 
     }
+    public void updateNotification (String text){
+        int mId = 2;
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle("Now Playing:")
+                        .setContentText(text);
+// Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MyActivity.class);
 
+// The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MyActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// mId allows you to update the notification later on.
+        mNotificationManager.notify(mId, mBuilder.build());
+        mBuilder.build();
+    }
     // Call this to clear the search history, TODO: add a button in menu for this.
     public void clearHistory() {
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
@@ -240,26 +275,34 @@ public class MyActivity extends ActionBarActivity{
 
         return super.onOptionsItemSelected(item);
     }
+    public void playSong (View view, String title){
+        updateNotification(title);
+        playSong(view);
+    }
 
     public void playSong(View view) {
         playing = !playing;
         ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
         ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
         if (playing){
-
             mediaPlayer.start();
-            playButton.setEnabled(false);
-            playButton.setVisibility(View.INVISIBLE);
-            pauseButton.setEnabled(true);
-            pauseButton.setVisibility(View.VISIBLE);
+            if (playButton!=null && pauseButton!=null){ //depends on the fragment
+                playButton.setEnabled(false);
+                playButton.setVisibility(View.INVISIBLE);
+                pauseButton.setEnabled(true);
+                pauseButton.setVisibility(View.VISIBLE);
+
+            }
 
         }
         else{
             mediaPlayer.pause();
-            playButton.setEnabled(true);
-            pauseButton.setEnabled(false);
-            playButton.setVisibility(View.VISIBLE);
-            pauseButton.setVisibility(View.INVISIBLE);
+            if (playButton!=null && pauseButton!=null) {
+                playButton.setEnabled(true);
+                pauseButton.setEnabled(false);
+                playButton.setVisibility(View.VISIBLE);
+                pauseButton.setVisibility(View.INVISIBLE);
+            }
         }
 
     }

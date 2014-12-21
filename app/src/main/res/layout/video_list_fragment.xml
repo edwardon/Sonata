@@ -24,31 +24,30 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:layout_width="wrap_content"
+        android:gravity="center"
         android:layout_gravity="center"
         android:orientation="horizontal">
-            <ImageButton
+        <ImageButton
 
             android:id="@+id/play_button"
             android:layout_weight = "3"
+            android:layout_marginLeft="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:gravity="center"
-            android:layout_gravity="center"
             android:src="@drawable/play"
             android:onClick="playSong"/>
-            <ImageButton
+        <ImageButton
 
             android:id="@+id/pause_button"
             android:layout_weight = "3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:gravity="center"
-            android:layout_gravity="center"
             android:src="@drawable/pause"
             android:onClick="playSong"/>
-        </RelativeLayout>
+    </RelativeLayout>
+
 
 
 </LinearLayout>
