@@ -9,8 +9,8 @@
         android:layout_height="match_parent"
         android:divider="@null"
         android:numColumns="2"
-        android:id="@+id/search_listview"
         android:horizontalSpacing="10dp"
+        android:id="@+id/search_listview"
         android:stretchMode="columnWidth">
 
      </GridView>

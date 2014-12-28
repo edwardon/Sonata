@@ -251,8 +251,8 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     }
     @Override
     public void onResume() {
-        controller.show();
         super.onResume();
+        controller.show();
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
