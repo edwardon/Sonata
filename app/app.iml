@@ -97,6 +97,7 @@
     <orderEntry type="library" exported="" name="google-http-client-1.18.0-rc" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="systembartint-1.0.3" level="project" />
     <orderEntry type="library" exported="" name="swipelistview-1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-jackson2-1.18.0-rc" level="project" />
   </component>

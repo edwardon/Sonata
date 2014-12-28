@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -47,7 +48,7 @@ public class VideoListFragment extends Fragment {
     private VideoListAdapter videoAdapter;
     final ArrayList<com.app.musicplayer.Custom.Objects.Video> searchArray = new ArrayList<com.app.musicplayer.Custom.Objects.Video>();
     private SwipeListView swipeListView;
-    private ListView listView;
+    private GridView gridView;
     private String queryTerm;
     MyActivity myActivity;
     public VideoListFragment(){
@@ -67,8 +68,8 @@ public class VideoListFragment extends Fragment {
         pauseButton.setEnabled(false);
         pauseButton.setVisibility(View.INVISIBLE); */
         videoAdapter = new VideoListAdapter(getActivity(),R.layout.search_view, searchArray);
-        listView = (ListView) rootView.findViewById(R.id.search_listview);
-        listView.setAdapter(videoAdapter);
+        gridView = (GridView) rootView.findViewById(R.id.search_listview);
+        gridView.setAdapter(videoAdapter);
 //        swipeListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 //            @Override
 //            public void onItemCheckedStateChanged(ActionMode mode, int position,
@@ -271,7 +272,7 @@ public class VideoListFragment extends Fragment {
                                             videoAdapter.notifyDataSetChanged();
                                             videoAdapter = new VideoListAdapter(getActivity(),R.layout.search_view,searchArray);
                                             videoAdapter.notifyDataSetChanged();
-                                            listView.setAdapter(videoAdapter);
+                                            gridView.setAdapter(videoAdapter);
                                         }
                                     });
 

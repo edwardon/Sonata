@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
@@ -28,6 +29,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,6 +50,8 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -66,6 +70,7 @@ import com.app.musicplayer.Custom.TypeFaceSpan;
 import com.app.musicplayer.R;
 import com.app.musicplayer.Util.MusicNotificationActivity;
 import com.app.musicplayer.Util.SongSuggestionProvider;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 
 public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl,NavigationDrawerCallbacks {
@@ -88,10 +93,11 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SpannableString s = new SpannableString("Sonata");
-        s.setSpan(new TypeFaceSpan(this, "SourceSansPro-ExtraLight.otf"), 0, s.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setContentView(R.layout.activity_main);
+
+        /*tint status bar*/
+        setStatusBarColor(findViewById(R.id.statusBarBackground),getResources().getColor(R.color.teal));
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -516,5 +522,36 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             mNavigationDrawerFragment.closeDrawer();
         else
             super.onBackPressed();
+    }
+    public void setStatusBarColor(View statusBar,int color){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            //status bar height
+            int actionBarHeight = getActionBarHeight();
+            int statusBarHeight = getStatusBarHeight();
+            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            Log.v("actionbar, statusbar",actionBarHeight + " "+statusBarHeight);
+            //action bar height
+            statusBar.getLayoutParams().height = statusBarHeight;
+            statusBar.setBackgroundColor(color);
+        }
+    }
+    public int getActionBarHeight() {
+        int actionBarHeight = 0;
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+        }
+        return actionBarHeight;
+    }
+
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

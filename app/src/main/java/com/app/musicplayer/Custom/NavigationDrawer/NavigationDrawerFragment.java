@@ -116,6 +116,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
             }
         };
 
+
         if (!mUserLearnedDrawer && !mFromSavedInstanceState)
             mDrawerLayout.openDrawer(mFragmentContainerView);
 
