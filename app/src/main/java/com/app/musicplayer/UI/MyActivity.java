@@ -14,6 +14,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -310,18 +311,23 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                 playlistNames.add("EDM Playlist");
                 writer.println("Best Electronic Dance Music Mix 2014 [EDM] ");
                 writer.println(" ");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("G-WjN61kfBw");
                 writer.println("Frontier");
                 writer.println("Thisnameisafail");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("Ph26aycXpPQ");
                 writer.println("Don't Leave (Ft. Ellie Goulding)");
                 writer.println("Seven Lions");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("SKlbCjNCDn4");
                 writer.println("Live For The Night");
                 writer.println("Krewella");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("TFdDZOoQrUE");
                 writer.println("Prototype");
                 writer.println("Thisnameisafail");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("jM4EZOnNKHc");
 
 
@@ -361,7 +367,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         catch (IOException e){}
 
     }
-    public void showAddPopup(View v,String title, String id) {
+    public void showAddPopup(View v,String title, String id,String thumbnail) {
         Log.v("HashSet is currently at",playlistNames.size()+"");
         boolean flag = false;
         final String names[] = new String [playlistNames.size()];
@@ -377,6 +383,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         //alertDialog.setTitle("Choose Playlist");
         ListView lv = (ListView) convertView.findViewById(R.id.dialog_listview);
         final String videoTitle = title, videoId = id;
+        final String videoThumbnail = thumbnail;
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             PrintWriter writer;
@@ -392,7 +399,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                     }
                 }
                 if (index!= -1) {
-                    renameSong(index, videoTitle, videoId);
+                    renameSong(index, videoTitle, videoId, videoThumbnail);
                     alertDialog.dismiss();
                 }
             }
@@ -402,7 +409,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         lv.setAdapter(adapter);
         alertDialog.show();
     }
-    public void renameSong(int playlistIndex, String curTitle,String videoId){
+    public void renameSong(int playlistIndex, String curTitle, String videoId, String videoThumbnail){
         AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View convertView = inflater.inflate(R.layout.rename_layout,null);
@@ -410,7 +417,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         final EditText artistText = (EditText) convertView.findViewById(R.id.artist_textbox);
         titleText.setText(curTitle);
         final int index = playlistIndex;
-        final String id = videoId;
+        final String id = videoId,  thumbnail = videoThumbnail;
         builder.setView(convertView)
                 .setPositiveButton(R.string.name_confirm, new DialogInterface.OnClickListener() {
                     PrintWriter writer;
@@ -423,20 +430,23 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                             reader = new FileReader("/data/data/com.app.musicplayer/files/" + filename);
                             Scanner scanner = new Scanner(reader);
                             String playlistTitle = scanner.nextLine();
-                            String songTitle = "", songId = "", artist = "";
+                            String songTitle = "", songId = "", artist = "", songThumbnail = "";
                             writer = new PrintWriter("/data/data/com.app.musicplayer/files/" + filename, "UTF-8");
                             writer.println(playlistTitle);
                             while (scanner.hasNextLine()) {
                                 songTitle = scanner.nextLine();
                                 artist = scanner.nextLine();
+                                songThumbnail = scanner.nextLine();
                                 songId = scanner.nextLine();
                                 writer.println(songTitle);
                                 writer.println(artist);
+                                writer.println(songThumbnail);
                                 writer.println(songId);
                             }
 
                             writer.println(titleText.getText().toString());
                             writer.println(artistText.getText().toString());
+                            writer.println(thumbnail);
                             writer.println(id);
                             writer.close();
                         } catch (IOException e) {

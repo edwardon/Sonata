@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.support.v7.widget.CardView;
 import android.view.Gravity;
 
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.musicplayer.UI.MusicMediaController;
@@ -64,10 +66,33 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
 //        textView.setHeight(pixels);
 //        textView.setPadding(0,0,0,0);
         convertView.setTag(position);
-        Button playButton = (Button) convertView.findViewById(R.id.play);
-        playButton.setOnClickListener(new View.OnClickListener() {
+        LinearLayout cardLinearLayout = (LinearLayout) convertView.findViewById(R.id.search_linearlayout);
+        cardLinearLayout.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
+                Bundle bundle = new Bundle();
+                MediaFragment fragment = new MediaFragment();
+                ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(item.videoTitle);
+                ((MyActivity) context).updateNotification(item.videoTitle);
+                bundle.putString("video_id", item.videoID);
+                /*((MyActivity) context).playSong(view);
+                if (MyActivity.mediaPlayer == null) {
+                    MyActivity.mediaPlayer = new MediaPlayer();
+                }
+                MyActivity.mediaPlayer.start();*/
+                fragment.setArguments(bundle);
+
+                fragmentManager.beginTransaction().add(fragment, fragment.getTag()).commit();
+            }
+        });
+
+        ImageView cardImageView = (ImageView) convertView.findViewById(R.id.thumbnail);
+        cardImageView.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
                 FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
                 Bundle bundle = new Bundle();
                 MediaFragment fragment = new MediaFragment();
@@ -84,14 +109,25 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
             }
         });
-        Button addButton = (Button) convertView.findViewById(R.id.add_to_playlist);
-        addButton.setOnClickListener(new View.OnClickListener(){
+        cardImageView.setOnLongClickListener(new View.OnLongClickListener() {
+
             MyActivity myActivity = (MyActivity) getContext();
             @Override
-            public void onClick(View v) {
-                myActivity.showAddPopup(v,item.videoTitle, item.videoID);
+            public boolean onLongClick(View v) {
+                myActivity.showAddPopup(v,item.videoTitle, item.videoID,item.thumbnailLink);
+                return true;
             }
         });
+        cardLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
+
+            MyActivity myActivity = (MyActivity) getContext();
+            @Override
+            public boolean onLongClick(View v) {
+                myActivity.showAddPopup(v,item.videoTitle, item.videoID,item.thumbnailLink);
+                return true;
+            }
+        });
+
 
         return convertView;
     }
