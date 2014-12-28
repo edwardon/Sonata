@@ -25,6 +25,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.view.Gravity;
@@ -56,15 +57,18 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.RemoteViews;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerCallbacks;
+import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerFragment;
 import com.app.musicplayer.Custom.TypeFaceSpan;
 import com.app.musicplayer.R;
 import com.app.musicplayer.Util.MusicNotificationActivity;
 import com.app.musicplayer.Util.SongSuggestionProvider;
 
 
-public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl {
+public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl,NavigationDrawerCallbacks {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     int numPlaylists;
@@ -79,61 +83,25 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     SharedPreferences mPrefs;
     static boolean playing = false;
     HashSet<String> playlistNames;
+    private Toolbar mToolbar;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SpannableString s = new SpannableString("Sonata");
         s.setSpan(new TypeFaceSpan(this, "SourceSansPro-ExtraLight.otf"), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        setContentView(R.layout.activity_my);
-        android.app.ActionBar actionBar = getActionBar();
-        actionBar.setTitle(s);
+        setContentView(R.layout.activity_main);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.fragment_drawer);
+        mNavigationDrawerFragment.setup(R.id.fragment_drawer, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
+
         if (savedInstanceState== null){
 
         }
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        String [] drawerTitles = {"Search", "Playlists", "Settings", "About"};
-        final Context context = this;
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, drawerTitles));
-
-
-
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer_white,  /* nav drawer icon to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_open/* "close drawer" description */
-        ) {
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getActionBar().setTitle("Sonata");
-                invalidateOptionsMenu();
-                SpannableString s = new SpannableString("Sonata");
-                s.setSpan(new TypeFaceSpan(getParent(), "SourceSansPro-ExtraLight.otf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                android.app.ActionBar actionBar = getActionBar();
-                actionBar.setTitle(s);// creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getActionBar().setTitle("Sonata");
-                invalidateOptionsMenu();
-                SpannableString s = new SpannableString("Sonata");
-                s.setSpan(new TypeFaceSpan(getParent(), "SourceSansPro-ExtraLight.otf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                android.app.ActionBar actionBar = getActionBar();
-                actionBar.setTitle(s);// creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,Gravity.START);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (mPrefs.contains(PLAYLIST)){
@@ -154,7 +122,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             editor.putStringSet(PLAYLIST_NAMES,new HashSet<String>());
             editor.apply();
         }
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         FragmentManager fragmentManager = getFragmentManager();
 
@@ -246,21 +214,21 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.search).setVisible(!drawerOpen);
+        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        //menu.findItem(R.id.search).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        //mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        //mDrawerToggle.onConfigurationChanged(newConfig);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -289,9 +257,9 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
 
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+//        if (mDrawerToggle.onOptionsItemSelected(item)) {
+//            return true;
+//        }
         if (item.getItemId() == R.id.clear_history) {
             clearHistory();
             return true;
@@ -528,62 +496,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         return 0;
     }
 
-    public class DrawerItemClickListener implements AdapterView.OnItemClickListener{
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            selectItem(position);
-            mDrawerList.setItemChecked(position, true);
-            //getActionBar().setDisplayHomeAsUpEnabled(true);
-            //getActionBar().setHomeButtonEnabled(true);
-        }
-        public void selectItem (int position){
-            FragmentManager fragmentManager = getFragmentManager();
-            try{
-
-
-                switch(position) {
-
-                    case 0:
-                        Log.v("SEARCH WAS CALLED","yes");
-
-                        mDrawerLayout.closeDrawer(mDrawerList);
-
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_linearlayout, new VideoListFragment())
-                                .commit();
-                        break;
-                    case 1:
-                        Log.v("PLAYLISTS clicked","yes");
-
-
-                        // Insert the fragment by replacing any existing fragment
-                        PlaylistFragment fragment = new PlaylistFragment();
-                        Bundle args = new Bundle();
-                        int numlists = mPrefs.getInt(PLAYLIST,0);
-                        args.putInt("playlists",numlists);
-                        fragment.setArguments(args);
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_linearlayout, fragment)
-                                .commit();
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    case 2:
-                        Log.v("SETTINGS was clicked","yes");
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    case 3:
-                        Log.v("ABOUT was clicked","yes");
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    default:
-                }
-            }
-            catch (NullPointerException e){}
-
-
-        }
-    }
     public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -592,5 +505,17 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                 ((MyActivity)getParent()).pause();
             }
         }
+    }
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        Toast.makeText(this, "Menu item selected -> " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mNavigationDrawerFragment.isDrawerOpen())
+            mNavigationDrawerFragment.closeDrawer();
+        else
+            super.onBackPressed();
     }
 }

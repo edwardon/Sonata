@@ -45,5 +45,7 @@
     <string name="song_details">Song Details</string>
     <string name="name_confirm">OK</string>
     <string name = "cancel"> cancel</string>
+    <string name="drawer_close">Sonata</string>
+
 
 </resources>
