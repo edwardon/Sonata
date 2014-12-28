@@ -2,7 +2,8 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/light_grey">
 
 
     <com.app.musicplayer.Custom.FontTextView
@@ -12,6 +13,7 @@
         android:layout_height="46dp"
         android:textSize="20sp"
         android:padding="2dp"
+        android:paddingBottom="20dp"
         android:text="Songs in this list"
         android:textColor="#616161"
         android:id="@+id/playlist_name_textview"
@@ -21,5 +23,6 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:divider="@null"
         android:id="@+id/playlist_name_listview" />
 </LinearLayout>

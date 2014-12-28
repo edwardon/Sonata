@@ -11,12 +11,14 @@ import com.google.api.services.youtube.model.ThumbnailDetails;
 public class Video {
     public String videoID;
     public String videoTitle;
+    public String thumbnailLink;
     public Bitmap thumbNail;
     public String videoDescription;
 
-    public Video(String videoID, String videoTitle,Bitmap thumbNail,String videoDescription) {
+    public Video(String videoID, String videoTitle,String thumbnailLink, Bitmap thumbNail,String videoDescription) {
         this.videoID = videoID;
         this.videoTitle = videoTitle;
+        this.thumbnailLink = thumbnailLink;
         this.thumbNail = thumbNail;
         this.videoDescription= videoDescription;
     }

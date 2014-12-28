@@ -162,7 +162,7 @@ public class VideoListFragment extends Fragment {
                     e.printStackTrace();
                 }
 
-                searchArray.add(new com.app.musicplayer.Custom.Objects.Video(rId.getVideoId(),singleVideo.getSnippet().getTitle(),image,singleVideo.getSnippet().getChannelTitle()));
+                searchArray.add(new com.app.musicplayer.Custom.Objects.Video(rId.getVideoId(),singleVideo.getSnippet().getTitle(),imageStr,image,singleVideo.getSnippet().getChannelTitle()));
 
                 System.out.println(" Video Id: " + rId.getVideoId());
 
@@ -177,7 +177,7 @@ public class VideoListFragment extends Fragment {
                                         @Override
                                         public void run() {
                                             videoAdapter.notifyDataSetChanged();
-                                            videoAdapter = new VideoListAdapter(getActivity(),R.layout.package_row,searchArray);
+                                            videoAdapter = new VideoListAdapter(getActivity(),R.layout.search_view,searchArray);
                                             videoAdapter.notifyDataSetChanged();
                                             listView.setAdapter(videoAdapter);
                                         }

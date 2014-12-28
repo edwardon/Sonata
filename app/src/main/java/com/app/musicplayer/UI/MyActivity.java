@@ -14,6 +14,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.view.Gravity;
@@ -57,15 +59,19 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.RemoteViews;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
 
+import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerCallbacks;
+import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerFragment;
 import com.app.musicplayer.Custom.TypeFaceSpan;
 import com.app.musicplayer.R;
 import com.app.musicplayer.Util.MusicNotificationActivity;
 import com.app.musicplayer.Util.SongSuggestionProvider;
 
 
-public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl {
+public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl,NavigationDrawerCallbacks {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     int numPlaylists;
@@ -81,12 +87,15 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     static boolean playing = false;
     HashSet<String> playlistNames;
 
+    private Toolbar mToolbar;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SpannableString s = new SpannableString("Sonata");
         s.setSpan(new TypeFaceSpan(this, "SourceSansPro-ExtraLight.otf"), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
         setContentView(R.layout.activity_my);
         android.app.ActionBar actionBar = getActionBar();
         actionBar.setTitle(s);
@@ -135,6 +144,19 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+=======
+        setContentView(R.layout.activity_main);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.fragment_drawer);
+        mNavigationDrawerFragment.setup(R.id.fragment_drawer, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
+
+        if (savedInstanceState== null){
+
+        }
+>>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (mPrefs.contains(PLAYLIST)) {
@@ -153,7 +175,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             editor.putStringSet(PLAYLIST_NAMES, new HashSet<String>());
             editor.apply();
         }
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         FragmentManager fragmentManager = getFragmentManager();
 
@@ -258,8 +280,8 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.search).setVisible(!drawerOpen);
+        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        //menu.findItem(R.id.search).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -267,7 +289,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        //mDrawerToggle.syncState();
     }
     @Override
     public void onStop() {
@@ -282,7 +304,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        //mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -324,9 +346,9 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
 
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+//        if (mDrawerToggle.onOptionsItemSelected(item)) {
+//            return true;
+//        }
         if (item.getItemId() == R.id.clear_history) {
             clearHistory();
             return true;
@@ -346,18 +368,23 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                 playlistNames.add("EDM Playlist");
                 writer.println("Best Electronic Dance Music Mix 2014 [EDM] ");
                 writer.println(" ");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("G-WjN61kfBw");
                 writer.println("Frontier");
                 writer.println("Thisnameisafail");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("Ph26aycXpPQ");
                 writer.println("Don't Leave (Ft. Ellie Goulding)");
                 writer.println("Seven Lions");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("SKlbCjNCDn4");
                 writer.println("Live For The Night");
                 writer.println("Krewella");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("TFdDZOoQrUE");
                 writer.println("Prototype");
                 writer.println("Thisnameisafail");
+                writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("jM4EZOnNKHc");
 
 
@@ -398,9 +425,14 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         }
 
     }
+<<<<<<< HEAD
 
     public void showAddPopup(View v, String title, String id) {
         Log.v("HashSet is currently at", playlistNames.size() + "");
+=======
+    public void showAddPopup(View v,String title, String id,String thumbnail) {
+        Log.v("HashSet is currently at",playlistNames.size()+"");
+>>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
         boolean flag = false;
         final String names[] = new String[playlistNames.size()];
         int counter = 0;
@@ -415,6 +447,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         //alertDialog.setTitle("Choose Playlist");
         ListView lv = (ListView) convertView.findViewById(R.id.dialog_listview);
         final String videoTitle = title, videoId = id;
+        final String videoThumbnail = thumbnail;
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             PrintWriter writer;
@@ -430,8 +463,13 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                         break;
                     }
                 }
+<<<<<<< HEAD
                 if (index != -1) {
                     renameSong(index, videoTitle, videoId);
+=======
+                if (index!= -1) {
+                    renameSong(index, videoTitle, videoId, videoThumbnail);
+>>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
                     alertDialog.dismiss();
                 }
             }
@@ -441,8 +479,12 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         lv.setAdapter(adapter);
         alertDialog.show();
     }
+<<<<<<< HEAD
 
     public void renameSong(int playlistIndex, String curTitle, String videoId) {
+=======
+    public void renameSong(int playlistIndex, String curTitle, String videoId, String videoThumbnail){
+>>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
         AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View convertView = inflater.inflate(R.layout.rename_layout, null);
@@ -450,7 +492,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         final EditText artistText = (EditText) convertView.findViewById(R.id.artist_textbox);
         titleText.setText(curTitle);
         final int index = playlistIndex;
-        final String id = videoId;
+        final String id = videoId,  thumbnail = videoThumbnail;
         builder.setView(convertView)
                 .setPositiveButton(R.string.name_confirm, new DialogInterface.OnClickListener() {
                     PrintWriter writer;
@@ -463,20 +505,23 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                             reader = new FileReader("/data/data/com.app.musicplayer/files/" + filename);
                             Scanner scanner = new Scanner(reader);
                             String playlistTitle = scanner.nextLine();
-                            String songTitle = "", songId = "", artist = "";
+                            String songTitle = "", songId = "", artist = "", songThumbnail = "";
                             writer = new PrintWriter("/data/data/com.app.musicplayer/files/" + filename, "UTF-8");
                             writer.println(playlistTitle);
                             while (scanner.hasNextLine()) {
                                 songTitle = scanner.nextLine();
                                 artist = scanner.nextLine();
+                                songThumbnail = scanner.nextLine();
                                 songId = scanner.nextLine();
                                 writer.println(songTitle);
                                 writer.println(artist);
+                                writer.println(songThumbnail);
                                 writer.println(songId);
                             }
 
                             writer.println(titleText.getText().toString());
                             writer.println(artistText.getText().toString());
+                            writer.println(thumbnail);
                             writer.println(id);
                             writer.close();
                         } catch (IOException e) {
@@ -555,6 +600,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         return 0;
     }
 
+<<<<<<< HEAD
     public class DrawerItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -613,6 +659,9 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         }
     }
 
+=======
+
+>>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
     public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -621,5 +670,16 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                 ((MyActivity) getParent()).pause();
             }
         }
+    }
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mNavigationDrawerFragment.isDrawerOpen())
+            mNavigationDrawerFragment.closeDrawer();
+        else
+            super.onBackPressed();
     }
 }
