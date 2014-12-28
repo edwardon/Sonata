@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.GridView;
+
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -62,12 +63,8 @@ public class VideoListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.search_layout, container, false);
-        //swipeListView = (SwipeListView) rootView.findViewById(R.id.video_list_view);
-       /* ImageButton playButton = (ImageButton) rootView.findViewById(R.id.play_button);
-        ImageButton pauseButton = (ImageButton) rootView.findViewById(R.id.pause_button);
-        pauseButton.setEnabled(false);
-        pauseButton.setVisibility(View.INVISIBLE); */
         videoAdapter = new VideoListAdapter(getActivity(),R.layout.search_view, searchArray);
+
         gridView = (GridView) rootView.findViewById(R.id.search_listview);
         gridView.setAdapter(videoAdapter);
 //        swipeListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -160,6 +157,7 @@ public class VideoListFragment extends Fragment {
 //        swipeListView.setAdapter(videoAdapter);
 //        swipeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
+
         if (getArguments() == null) {
             queryTerm = "thisnameisafail prototype";
         }
@@ -169,6 +167,7 @@ public class VideoListFragment extends Fragment {
         new getSearchQuery().execute();
         return rootView;
     }
+
     private class getSearchQuery extends AsyncTask<Void,Void,Void> {
 
         @Override

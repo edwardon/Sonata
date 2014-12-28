@@ -11,12 +11,12 @@ import com.app.musicplayer.R;
  * Created by Edward Onochie on 17/12/14.
  */
 
-// Same as the regular one, but doesn't hide.
 public class MusicMediaController extends MediaController {
     String title;
     public MusicMediaController(Context context) {
         super(context);
         title = "";
+        show(0);
     }
     @Override
     public void setAnchorView(View view) {
@@ -26,7 +26,13 @@ public class MusicMediaController extends MediaController {
         tvSongTitle.setText("...");
         addView(customView);
     }
+    @Override
+    public void hide() {
 
+    }
+    public void actualHide() {
+        super.hide();
+    }
     public void setSongTitle(String title) {
         TextView tvSongTitle = (TextView) findViewById(R.id.songTitleView);
         tvSongTitle.setText(title);
