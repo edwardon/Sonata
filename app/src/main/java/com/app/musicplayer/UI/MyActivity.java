@@ -508,7 +508,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     }
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Toast.makeText(this, "Menu item selected -> " + position, Toast.LENGTH_SHORT).show();
     }
 
     @Override
