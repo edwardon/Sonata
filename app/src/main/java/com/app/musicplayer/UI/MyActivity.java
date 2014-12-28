@@ -60,7 +60,6 @@ import android.widget.MediaController;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 
 import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerCallbacks;
@@ -96,67 +95,17 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         s.setSpan(new TypeFaceSpan(this, "SourceSansPro-ExtraLight.otf"), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        setContentView(R.layout.activity_my);
-        android.app.ActionBar actionBar = getActionBar();
-        actionBar.setTitle(s);
-        if (savedInstanceState == null) {
-
-        }
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        String[] drawerTitles = {"Search", "Playlists", "Settings", "About"};
-        final Context context = this;
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, drawerTitles));
-
-
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer_white,  /* nav drawer icon to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_open/* "close drawer" description */
-        ) {
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getActionBar().setTitle("Sonata");
-                invalidateOptionsMenu();
-                SpannableString s = new SpannableString("Sonata");
-                s.setSpan(new TypeFaceSpan(getParent(), "SourceSansPro-ExtraLight.otf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                android.app.ActionBar actionBar = getActionBar();
-                actionBar.setTitle(s);// creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getActionBar().setTitle("Sonata");
-                invalidateOptionsMenu();
-                SpannableString s = new SpannableString("Sonata");
-                s.setSpan(new TypeFaceSpan(getParent(), "SourceSansPro-ExtraLight.otf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                android.app.ActionBar actionBar = getActionBar();
-                actionBar.setTitle(s);// creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
-=======
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
+        getSupportActionBar().setTitle(s);
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.fragment_drawer);
         mNavigationDrawerFragment.setup(R.id.fragment_drawer, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
 
-        if (savedInstanceState== null){
 
-        }
->>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
+
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (mPrefs.contains(PLAYLIST)) {
@@ -425,14 +374,9 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         }
 
     }
-<<<<<<< HEAD
 
-    public void showAddPopup(View v, String title, String id) {
-        Log.v("HashSet is currently at", playlistNames.size() + "");
-=======
     public void showAddPopup(View v,String title, String id,String thumbnail) {
         Log.v("HashSet is currently at",playlistNames.size()+"");
->>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
         boolean flag = false;
         final String names[] = new String[playlistNames.size()];
         int counter = 0;
@@ -463,13 +407,9 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                         break;
                     }
                 }
-<<<<<<< HEAD
-                if (index != -1) {
-                    renameSong(index, videoTitle, videoId);
-=======
+
                 if (index!= -1) {
                     renameSong(index, videoTitle, videoId, videoThumbnail);
->>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
                     alertDialog.dismiss();
                 }
             }
@@ -479,12 +419,8 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         lv.setAdapter(adapter);
         alertDialog.show();
     }
-<<<<<<< HEAD
 
-    public void renameSong(int playlistIndex, String curTitle, String videoId) {
-=======
     public void renameSong(int playlistIndex, String curTitle, String videoId, String videoThumbnail){
->>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
         AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View convertView = inflater.inflate(R.layout.rename_layout, null);
@@ -600,7 +536,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         return 0;
     }
 
-<<<<<<< HEAD
     public class DrawerItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -659,9 +594,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         }
     }
 
-=======
-
->>>>>>> 55b26bd520d8134777bfce3d73cc5bf0734c45f0
     public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
