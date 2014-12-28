@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -32,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.support.v4.view.MenuItemCompat;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -78,6 +80,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     SharedPreferences mPrefs;
     static boolean playing = false;
     HashSet<String> playlistNames;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,16 +90,15 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         setContentView(R.layout.activity_my);
         android.app.ActionBar actionBar = getActionBar();
         actionBar.setTitle(s);
-        if (savedInstanceState== null){
+        if (savedInstanceState == null) {
 
         }
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        String [] drawerTitles = {"Search", "Playlists", "Settings", "About"};
+        String[] drawerTitles = {"Search", "Playlists", "Settings", "About"};
         final Context context = this;
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, drawerTitles));
-
 
 
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -130,32 +132,35 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,Gravity.START);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (mPrefs.contains(PLAYLIST)){
+        if (mPrefs.contains(PLAYLIST)) {
 
             numPlaylists = mPrefs.getInt(PLAYLIST, 0);
 
-        }
-        else{
+        } else {
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putInt(PLAYLIST, 0);
             editor.apply();
         }
-        if (mPrefs.contains(PLAYLIST_NAMES)){
-            playlistNames =(HashSet<String>) mPrefs.getStringSet(PLAYLIST_NAMES, new HashSet<String>());
-        }
-        else{
+        if (mPrefs.contains(PLAYLIST_NAMES)) {
+            playlistNames = (HashSet<String>) mPrefs.getStringSet(PLAYLIST_NAMES, new HashSet<String>());
+        } else {
             SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putStringSet(PLAYLIST_NAMES,new HashSet<String>());
+            editor.putStringSet(PLAYLIST_NAMES, new HashSet<String>());
             editor.apply();
         }
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         FragmentManager fragmentManager = getFragmentManager();
+
+        controller = new MusicMediaController(this);
+        controller.setAnchorView(findViewById(R.id.main_linearlayout));
+        controller.setMediaPlayer(this);
+        controller.setEnabled(true);
 
         // Get the intent, verify the action and get the query
         Intent intent = getIntent();
@@ -169,29 +174,33 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 
             Fragment fragment = new VideoListFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("query",query);
+            bundle.putString("query", query);
             fragment.setArguments(bundle);
             fragmentManager.beginTransaction()
-                    .replace(R.id.main_linearlayout,fragment)
+                    .replace(R.id.main_linearlayout, fragment)
                     .commit();
-        }
-        else {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    controller.show(0);
+                }
+            },1000);
+        } else {
             fragmentManager.beginTransaction()
-                    .replace(R.id.main_linearlayout,new VideoListFragment())
+                    .replace(R.id.main_linearlayout, new VideoListFragment())
                     .commit();
         }
-
 
 
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
 
-        controller = new MusicMediaController(this);
-        controller.setAnchorView(findViewById(R.id.main_linearlayout));
-        controller.setMediaPlayer(this);
-        controller.setEnabled(true);
+
     }
-    public void updateNotification(String title){
+
+
+    public void updateNotification(String title) {
         Intent resultIntent = new Intent(this, MyActivity.class);
 
 // This ensures that the back button follows the recommended
@@ -228,6 +237,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 //        expandedView.setOnClickPendingIntent(R.id.notif_playButton, pendingIntent);
         mNotificationManager.notify(1, notification);
     }
+
     // Call this to clear the search history
     public void clearHistory() {
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
@@ -238,10 +248,13 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         controller.show(0);
-        return true;
+        return super.onTouchEvent(event);
     }
 
-    public MediaController getController() { return controller; }
+    public MediaController getController() {
+        return controller;
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
@@ -249,18 +262,29 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         menu.findItem(R.id.search).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
     }
-
+    @Override
+    public void onStop() {
+        controller.actualHide();
+        super.onStop();
+    }
+    @Override
+    public void onResume() {
+        controller.show();
+        super.onResume();
+    }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -274,7 +298,18 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
-        SearchView.SearchAutoComplete theTextArea = (SearchView.SearchAutoComplete)searchView.findViewById(R.id.search_src_text);
+        //Do this so that the user can type.
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    controller.actualHide();
+                }
+                else controller.show(0);
+            }
+        });
+
+        SearchView.SearchAutoComplete theTextArea = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
         theTextArea.setTextColor(Color.WHITE);//or any color that you want
         theTextArea.setHintTextColor(Color.WHITE);
 
@@ -283,6 +318,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         searchView.setSubmitButtonEnabled(true);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
@@ -299,13 +335,13 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         return super.onOptionsItemSelected(item);
     }
 
-    public void addToPlaylistTest(){
+    public void addToPlaylistTest() {
         int numPlaylists = 1;
-        for (int i=0; i<1; i++){
+        for (int i = 0; i < 1; i++) {
             String FILENAME = "playlist0";
 
-            try{
-                PrintWriter writer = new PrintWriter("/data/data/com.app.musicplayer/files/playlist0.txt","UTF-8");
+            try {
+                PrintWriter writer = new PrintWriter("/data/data/com.app.musicplayer/files/playlist0.txt", "UTF-8");
                 writer.println("EDM Playlist");
                 playlistNames.add("EDM Playlist");
                 writer.println("Best Electronic Dance Music Mix 2014 [EDM] ");
@@ -338,35 +374,37 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 //                outputWriter.close();
 
                 Log.v("info has been stored", "true");
+            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
             }
-            catch (FileNotFoundException e){}
-            catch (IOException e){}
             //writer.close();
         }
-        mPrefs.edit().putInt(PLAYLIST,1).commit();
+        mPrefs.edit().putInt(PLAYLIST, 1).commit();
     }
-    public void addToPlaylist(View view){
 
-        int numPlaylists = mPrefs.getInt(PLAYLIST,0);
+    public void addToPlaylist(View view) {
+
+        int numPlaylists = mPrefs.getInt(PLAYLIST, 0);
         numPlaylists++;
-        String FILENAME = "Playlist"+numPlaylists;
-        mPrefs.edit().putInt(PLAYLIST,numPlaylists).apply();
-        try{
+        String FILENAME = "Playlist" + numPlaylists;
+        mPrefs.edit().putInt(PLAYLIST, numPlaylists).apply();
+        try {
 
             FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
             //fos.write(string.getBytes());
             fos.close();
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
         }
-        catch (FileNotFoundException e){}
-        catch (IOException e){}
 
     }
-    public void showAddPopup(View v,String title, String id) {
-        Log.v("HashSet is currently at",playlistNames.size()+"");
+
+    public void showAddPopup(View v, String title, String id) {
+        Log.v("HashSet is currently at", playlistNames.size() + "");
         boolean flag = false;
-        final String names[] = new String [playlistNames.size()];
-        int counter=0;
-        for (String s: playlistNames){
+        final String names[] = new String[playlistNames.size()];
+        int counter = 0;
+        for (String s : playlistNames) {
             names[counter] = s;
             counter++;
         }
@@ -381,31 +419,33 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             PrintWriter writer;
             FileReader reader;
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String text = ((TextView) view).getText().toString();
-                int index=-1;
-                for (int i=0; i<names.length; i++) {
-                    if (text.equals(names[i])){
+                int index = -1;
+                for (int i = 0; i < names.length; i++) {
+                    if (text.equals(names[i])) {
                         index = i;
                         break;
                     }
                 }
-                if (index!= -1) {
+                if (index != -1) {
                     renameSong(index, videoTitle, videoId);
                     alertDialog.dismiss();
                 }
             }
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.dialog_list_item,names);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.dialog_list_item, names);
         lv.setAdapter(adapter);
         alertDialog.show();
     }
-    public void renameSong(int playlistIndex, String curTitle,String videoId){
+
+    public void renameSong(int playlistIndex, String curTitle, String videoId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        View convertView = inflater.inflate(R.layout.rename_layout,null);
+        View convertView = inflater.inflate(R.layout.rename_layout, null);
         final EditText titleText = (EditText) convertView.findViewById(R.id.title_textbox);
         final EditText artistText = (EditText) convertView.findViewById(R.id.artist_textbox);
         titleText.setText(curTitle);
@@ -460,9 +500,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             mediaPlayer.start();
             updateNotification(controller.getTitle());
         }
-
-
-
     }
 
     @Override
@@ -518,7 +555,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         return 0;
     }
 
-    public class DrawerItemClickListener implements AdapterView.OnItemClickListener{
+    public class DrawerItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -527,15 +564,16 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             //getActionBar().setDisplayHomeAsUpEnabled(true);
             //getActionBar().setHomeButtonEnabled(true);
         }
-        public void selectItem (int position){
+
+        public void selectItem(int position) {
             FragmentManager fragmentManager = getFragmentManager();
-            try{
+            try {
 
 
-                switch(position) {
+                switch (position) {
 
                     case 0:
-                        Log.v("SEARCH WAS CALLED","yes");
+                        Log.v("SEARCH WAS CALLED", "yes");
 
                         mDrawerLayout.closeDrawer(mDrawerList);
 
@@ -544,14 +582,14 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                                 .commit();
                         break;
                     case 1:
-                        Log.v("PLAYLISTS clicked","yes");
+                        Log.v("PLAYLISTS clicked", "yes");
 
 
                         // Insert the fragment by replacing any existing fragment
                         PlaylistFragment fragment = new PlaylistFragment();
                         Bundle args = new Bundle();
-                        int numlists = mPrefs.getInt(PLAYLIST,0);
-                        args.putInt("playlists",numlists);
+                        int numlists = mPrefs.getInt(PLAYLIST, 0);
+                        args.putInt("playlists", numlists);
                         fragment.setArguments(args);
                         fragmentManager.beginTransaction()
                                 .replace(R.id.main_linearlayout, fragment)
@@ -559,27 +597,28 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                         mDrawerLayout.closeDrawer(mDrawerList);
                         break;
                     case 2:
-                        Log.v("SETTINGS was clicked","yes");
+                        Log.v("SETTINGS was clicked", "yes");
                         mDrawerLayout.closeDrawer(mDrawerList);
                         break;
                     case 3:
-                        Log.v("ABOUT was clicked","yes");
+                        Log.v("ABOUT was clicked", "yes");
                         mDrawerLayout.closeDrawer(mDrawerList);
                         break;
                     default:
                 }
+            } catch (NullPointerException e) {
             }
-            catch (NullPointerException e){}
 
 
         }
     }
+
     public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if(action.equalsIgnoreCase("ACTION_PLAY")){
-                ((MyActivity)getParent()).pause();
+            if (action.equalsIgnoreCase("ACTION_PLAY")) {
+                ((MyActivity) getParent()).pause();
             }
         }
     }

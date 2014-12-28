@@ -16,6 +16,7 @@ public class MusicMediaController extends MediaController {
     public MusicMediaController(Context context) {
         super(context);
         title = "";
+        show(0);
     }
     @Override
     public void setAnchorView(View view) {
@@ -25,7 +26,13 @@ public class MusicMediaController extends MediaController {
         tvSongTitle.setText("...");
         addView(customView);
     }
+    @Override
+    public void hide() {
 
+    }
+    public void actualHide() {
+        super.hide();
+    }
     public void setSongTitle(String title) {
         TextView tvSongTitle = (TextView) findViewById(R.id.songTitleView);
         tvSongTitle.setText(title);
