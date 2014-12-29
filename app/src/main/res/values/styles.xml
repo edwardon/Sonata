@@ -71,12 +71,12 @@
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
     </style>
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/teal</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/myAccentColor</item>
-        <item name="android:textColorPrimary">@color/myTextPrimaryColor</item>
+        <item name="android:textColorPrimary">@color/dark_grey</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:windowBackground">@color/myWindowBackground</item>
     </style>

@@ -249,11 +249,11 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         controller.actualHide();
         super.onStop();
     }
-    @Override
-    public void onResume() {
-        super.onResume();
-        controller.show();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        controller.show();
+//    }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -538,64 +538,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     @Override
     public int getAudioSessionId() {
         return 0;
-    }
-
-    public class DrawerItemClickListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            selectItem(position);
-            mDrawerList.setItemChecked(position, true);
-            //getActionBar().setDisplayHomeAsUpEnabled(true);
-            //getActionBar().setHomeButtonEnabled(true);
-        }
-
-        public void selectItem(int position) {
-            FragmentManager fragmentManager = getFragmentManager();
-            try {
-
-
-                switch (position) {
-
-                    case 0:
-                        Log.v("SEARCH WAS CALLED", "yes");
-
-                        mDrawerLayout.closeDrawer(mDrawerList);
-
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_linearlayout, new VideoListFragment())
-                                .commit();
-                        break;
-                    case 1:
-                        Log.v("PLAYLISTS clicked", "yes");
-
-
-                        // Insert the fragment by replacing any existing fragment
-                        PlaylistFragment fragment = new PlaylistFragment();
-                        Bundle args = new Bundle();
-                        int numlists = mPrefs.getInt(PLAYLIST, 0);
-                        args.putInt("playlists", numlists);
-                        fragment.setArguments(args);
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_linearlayout, fragment)
-                                .commit();
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    case 2:
-                        Log.v("SETTINGS was clicked", "yes");
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    case 3:
-                        Log.v("ABOUT was clicked", "yes");
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    default:
-                }
-            } catch (NullPointerException e) {
-            }
-
-
-        }
     }
 
     public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {

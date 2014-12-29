@@ -55,7 +55,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.thumbnail);
         imageView.setImageBitmap(item.thumbNail);
-        imageView.setColorFilter(Color.rgb(123, 123, 123), android.graphics.PorterDuff.Mode.MULTIPLY);
+        //imageView.setColorFilter(Color.rgb(123, 123, 123), android.graphics.PorterDuff.Mode.MULTIPLY);
 //        openFont = Typeface.createFromAsset(getContext().getAssets(), "SourceSansPro-Light.otf");
 //
 //        textView.setTypeface(openFont);
