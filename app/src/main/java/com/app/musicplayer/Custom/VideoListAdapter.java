@@ -68,23 +68,9 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
         convertView.setTag(position);
         LinearLayout cardLinearLayout = (LinearLayout) convertView.findViewById(R.id.search_linearlayout);
         cardLinearLayout.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
-                Bundle bundle = new Bundle();
-                MediaFragment fragment = new MediaFragment();
-                ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(item.videoTitle);
-                ((MyActivity) context).updateNotification(item.videoTitle);
-                bundle.putString("video_id", item.videoID);
-                /*((MyActivity) context).playSong(view);
-                if (MyActivity.mediaPlayer == null) {
-                    MyActivity.mediaPlayer = new MediaPlayer();
-                }
-                MyActivity.mediaPlayer.start();*/
-                fragment.setArguments(bundle);
-
-                fragmentManager.beginTransaction().add(fragment, fragment.getTag()).commit();
+                loadSong(item);
             }
         });
 
@@ -93,20 +79,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
 
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
-                Bundle bundle = new Bundle();
-                MediaFragment fragment = new MediaFragment();
-                ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(item.videoTitle);
-                ((MyActivity) context).updateNotification(item.videoTitle);
-                bundle.putString("video_id",item.videoID);
-                /*((MyActivity) context).playSong(view);
-                if (MyActivity.mediaPlayer == null) {
-                    MyActivity.mediaPlayer = new MediaPlayer();
-                }
-                MyActivity.mediaPlayer.start();*/
-                fragment.setArguments(bundle);
-
-                fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
+                loadSong(item);
             }
         });
         cardImageView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -130,5 +103,17 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
 
 
         return convertView;
+    }
+
+    private void loadSong(Video item) {
+        FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
+        Bundle bundle = new Bundle();
+        MediaFragment fragment = new MediaFragment();
+        ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(item.videoTitle);
+        ((MyActivity) context).getService().updateNotification(item.videoTitle);
+        bundle.putString("video_id",item.videoID);
+        fragment.setArguments(bundle);
+
+        fragmentManager.beginTransaction().add(fragment,fragment.getTag()).commit();
     }
 }

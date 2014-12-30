@@ -109,24 +109,26 @@ public class MediaFragment extends Fragment {
             super.onPostExecute(streamingUrl);
             progressDialog.dismiss();
             if (streamingUrl != null) {
-                if (MyActivity.mediaPlayer != null)
-                    MyActivity.mediaPlayer.stop();
+                ((MyActivity) getActivity()).getService().onUnbind(((MyActivity) getActivity()).playIntent);
+                ((MyActivity) getActivity()).getService().onCreate();
+                MediaPlayer player = ((MyActivity) getActivity()).getService().getMediaPlayer();
+                //player.stop();
 
-                MyActivity.mediaPlayer = new MediaPlayer();
+                //MyActivity.mediaPlayer = new MediaPlayer();
 
-                MyActivity.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                //MyActivity.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 System.out.println("WHY IS THIS: " + streamingUrl);
 
                 try{
-                    MyActivity.mediaPlayer.setDataSource(getActivity(), Uri.parse(streamingUrl));
-                    MyActivity.mediaPlayer.prepare();
+                    player.setDataSource(getActivity(), Uri.parse(streamingUrl));
+                    player.prepare();
                 }
                 catch (IOException e){};
-                MyActivity.mediaPlayer.start();
+                player.start();
 
                 ((MyActivity) getActivity()).getController().show(0);
-                if (MyActivity.mediaPlayer.getDuration() >= 24000000) {
+                if (player.getDuration() >= 24000000) {
                     pos++;
                     // Not every URL works, keep trying until we get one that does.
                     // The recursion is messy, but I can't think of a better way.

@@ -13,6 +13,7 @@ import com.app.musicplayer.R;
 
 public class MusicMediaController extends MediaController {
     String title;
+    public static String activeTitle = "";
     public MusicMediaController(Context context) {
         super(context);
         title = "";
@@ -23,7 +24,8 @@ public class MusicMediaController extends MediaController {
         super.setAnchorView(view);
         View customView = View.inflate(getContext(),R.layout.song_title, null);
         TextView tvSongTitle = (TextView) customView.findViewById(R.id.songTitleView);
-        tvSongTitle.setText("...");
+        // Default text
+        tvSongTitle.setText("");
         addView(customView);
     }
     @Override
@@ -37,6 +39,7 @@ public class MusicMediaController extends MediaController {
         TextView tvSongTitle = (TextView) findViewById(R.id.songTitleView);
         tvSongTitle.setText(title);
         this.title = title;
+        activeTitle = title;
     }
     public String getTitle(){
         return title;
