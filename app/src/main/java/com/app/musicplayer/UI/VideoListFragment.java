@@ -18,7 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
+import android.widget.GridView;
+
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -48,7 +49,7 @@ public class VideoListFragment extends Fragment {
     private VideoListAdapter videoAdapter;
     final ArrayList<com.app.musicplayer.Custom.Objects.Video> searchArray = new ArrayList<com.app.musicplayer.Custom.Objects.Video>();
     private SwipeListView swipeListView;
-    private ListView listView;
+    private GridView gridView;
     private String queryTerm;
     MyActivity myActivity;
     public VideoListFragment(){
@@ -63,8 +64,99 @@ public class VideoListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.search_layout, container, false);
         videoAdapter = new VideoListAdapter(getActivity(),R.layout.search_view, searchArray);
-        listView = (ListView) rootView.findViewById(R.id.search_listview);
-        listView.setAdapter(videoAdapter);
+
+        gridView = (GridView) rootView.findViewById(R.id.search_listview);
+        gridView.setAdapter(videoAdapter);
+//        swipeListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+//            @Override
+//            public void onItemCheckedStateChanged(ActionMode mode, int position,
+//                                                  long id, boolean checked) {
+//                mode.setTitle("Selected (" + swipeListView.getCountSelected() + ")");
+//                refreshController();
+//            }
+//            @Override
+//            public void onDestroyActionMode(ActionMode mode) {
+//                swipeListView.unselectedChoiceStates();
+//                refreshController();
+//            }
+//
+//            @Override
+//            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+//                refreshController();
+//                return true;
+//
+//            }
+//
+//            @Override
+//            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+//                refreshController(); return false;
+//            }
+//
+//            @Override
+//            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+//                refreshController();
+//                return false;
+//            }
+//        });
+//
+//        swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
+//            @Override
+//            public void onOpened(int position, boolean toRight) {
+//                refreshController();
+//            }
+//
+//            @Override
+//            public void onClosed(int position, boolean fromRight) {
+//                refreshController();
+//            }
+//
+//            @Override
+//            public void onListChanged() {
+//                refreshController();
+//            }
+//
+//            @Override
+//            public void onMove(int position, float x) {
+//                refreshController();
+//            }
+//
+//            @Override
+//            public void onStartOpen(int position, int action, boolean right) {
+//                refreshController();
+//                Log.d("swipe", String.format("onStartOpen %d - action %d", position, action));
+//            }
+//
+//            @Override
+//            public void onStartClose(int position, boolean right) {
+//                refreshController();
+//                Log.d("swipe", String.format("onStartClose %d", position));
+//            }
+//
+//            @Override
+//            public void onClickFrontView(int position) {
+//                refreshController();
+//                Log.d("swipe", String.format("onClickFrontView %d", position));
+//            }
+//
+//            @Override
+//            public void onClickBackView(int position) {
+//                refreshController();
+//                Log.d("swipe", String.format("onClickBackView %d", position));
+//            }
+//
+//            @Override
+//            public void onDismiss(int[] reverseSortedPositions) {
+//                refreshController();
+//                for (int position : reverseSortedPositions) {
+//                    //data.remove(position);
+//                }
+//                videoAdapter.notifyDataSetChanged();
+//            }
+//        });
+//
+//        swipeListView.setAdapter(videoAdapter);
+//        swipeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
 
         if (getArguments() == null) {
             queryTerm = "thisnameisafail prototype";
@@ -179,7 +271,7 @@ public class VideoListFragment extends Fragment {
                                             videoAdapter.notifyDataSetChanged();
                                             videoAdapter = new VideoListAdapter(getActivity(),R.layout.search_view,searchArray);
                                             videoAdapter.notifyDataSetChanged();
-                                            listView.setAdapter(videoAdapter);
+                                            gridView.setAdapter(videoAdapter);
                                         }
                                     });
 

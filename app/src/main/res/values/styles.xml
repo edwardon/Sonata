@@ -78,7 +78,6 @@
         <item name="colorAccent">@color/myAccentColor</item>
         <item name="android:textColorPrimary">@color/myTextPrimaryColor</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-
         <item name="android:windowBackground">@color/myWindowBackground</item>
     </style>
 
@@ -89,9 +88,12 @@
 
     <style name="ToolBarStyle" parent="">
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-    </style>
+        <item name="theme">@style/ActionBarStyle</item>
 
+    </style>
+    <style name="ActionBarStyle" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="height">@dimen/action_bar_height</item>
+    </style>
 
 
 </resources>

@@ -4,11 +4,14 @@
     android:layout_height="match_parent"
     android:background="@color/light_grey"
     >
-    <ListView
+    <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@null"
-        android:id="@+id/search_listview">
+        android:numColumns="2"
+        android:id="@+id/search_listview"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth">
 
-     </ListView>
+     </GridView>
 </LinearLayout>
