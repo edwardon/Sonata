@@ -7,17 +7,20 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -67,27 +70,60 @@ import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerFragment;
 import com.app.musicplayer.Custom.TypeFaceSpan;
 import com.app.musicplayer.R;
 import com.app.musicplayer.Util.MusicNotificationActivity;
+import com.app.musicplayer.Util.MusicService;
 import com.app.musicplayer.Util.SongSuggestionProvider;
 
 
 public class MyActivity extends ActionBarActivity implements MediaController.MediaPlayerControl,NavigationDrawerCallbacks {
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+
     int numPlaylists;
     private ActionBarDrawerToggle mDrawerToggle;
     private final String PLAYLIST = "PLAYLIST";
     private final String PLAYLIST_NAMES = "PLAYLIST_NAMES";
     private final int notifId = 1;
-    public static MediaPlayer mediaPlayer = null;
+    //public static MediaPlayer mediaPlayer = null;
 
     private MusicMediaController controller;
 
     SharedPreferences mPrefs;
-    static boolean playing = false;
     HashSet<String> playlistNames;
+
+    private MusicService musicService;
+    public Intent playIntent; //!
 
     private Toolbar mToolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
+
+
+    private boolean musicBound = false;
+    //connect to the service
+    private ServiceConnection musicConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            //get service
+            musicService = binder.getService();
+            musicBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicBound = false;
+        }
+    };
+
+    //start and bind the service when the activity starts
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(playIntent==null){
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
+    }
+    public MusicService getService() {return musicService;}
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +145,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (mPrefs.contains(PLAYLIST)) {
-
             numPlaylists = mPrefs.getInt(PLAYLIST, 0);
 
         } else {
@@ -132,6 +167,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         controller.setAnchorView(findViewById(R.id.main_linearlayout));
         controller.setMediaPlayer(this);
         controller.setEnabled(true);
+        controller.setSongTitle(controller.activeTitle);
 
         // Get the intent, verify the action and get the query
         Intent intent = getIntent();
@@ -163,15 +199,12 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                     .commit();
         }
 
-
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
-
-
     }
 
 
-    public void updateNotification(String title) {
+    /*public void updateNotification(String title) {
         Intent resultIntent = new Intent(this, MyActivity.class);
 
 // This ensures that the back button follows the recommended
@@ -207,7 +240,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 //
 //        expandedView.setOnClickPendingIntent(R.id.notif_playButton, pendingIntent);
         mNotificationManager.notify(1, notification);
-    }
+    }*/
 
     // Call this to clear the search history
     public void clearHistory() {
@@ -477,39 +510,41 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 
     @Override
     public void start() {
-        if (mediaPlayer != null) {
-            mediaPlayer.start();
-            updateNotification(controller.getTitle());
-        }
+            musicService.go();
+            musicService.updateNotification(controller.getTitle());
     }
 
     @Override
     public void pause() {
-        if (mediaPlayer != null) mediaPlayer.pause();
-    }
-
-    @Override
-    public int getDuration() {
-        if (mediaPlayer != null) return mediaPlayer.getDuration();
-        return 0;
+        musicService.pause();
     }
 
     @Override
     public int getCurrentPosition() {
-        if (mediaPlayer != null) return mediaPlayer.getCurrentPosition();
-        return 0;
+        if(musicService!=null && musicBound && musicService.isPlaying())
+            return musicService.getPosn();
+        else return 0;
     }
 
     @Override
-    public void seekTo(int i) {
-        if (mediaPlayer != null) mediaPlayer.seekTo(i);
+    public int getDuration() {
+        if(musicService!=null && musicBound/* && musicService.isPlaying()*/)
+            return musicService.getDur();
+        else return 0;
     }
 
     @Override
     public boolean isPlaying() {
-        if (mediaPlayer != null) return mediaPlayer.isPlaying();
+        if(musicService!=null && musicBound)
+            return musicService.isPlaying();
         return false;
     }
+
+    @Override
+    public void seekTo(int pos) {
+        musicService.seekTo(pos);
+    }
+
 
     @Override
     public int getBufferPercentage() {
@@ -536,64 +571,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         return 0;
     }
 
-    public class DrawerItemClickListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            selectItem(position);
-            mDrawerList.setItemChecked(position, true);
-            //getActionBar().setDisplayHomeAsUpEnabled(true);
-            //getActionBar().setHomeButtonEnabled(true);
-        }
-
-        public void selectItem(int position) {
-            FragmentManager fragmentManager = getFragmentManager();
-            try {
-
-
-                switch (position) {
-
-                    case 0:
-                        Log.v("SEARCH WAS CALLED", "yes");
-
-                        mDrawerLayout.closeDrawer(mDrawerList);
-
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_linearlayout, new VideoListFragment())
-                                .commit();
-                        break;
-                    case 1:
-                        Log.v("PLAYLISTS clicked", "yes");
-
-
-                        // Insert the fragment by replacing any existing fragment
-                        PlaylistFragment fragment = new PlaylistFragment();
-                        Bundle args = new Bundle();
-                        int numlists = mPrefs.getInt(PLAYLIST, 0);
-                        args.putInt("playlists", numlists);
-                        fragment.setArguments(args);
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_linearlayout, fragment)
-                                .commit();
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    case 2:
-                        Log.v("SETTINGS was clicked", "yes");
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    case 3:
-                        Log.v("ABOUT was clicked", "yes");
-                        mDrawerLayout.closeDrawer(mDrawerList);
-                        break;
-                    default:
-                }
-            } catch (NullPointerException e) {
-            }
-
-
-        }
-    }
-
     public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -613,5 +590,12 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             mNavigationDrawerFragment.closeDrawer();
         else
             super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(playIntent);
+        musicService = null;
+        super.onDestroy();
     }
 }

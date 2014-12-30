@@ -137,7 +137,7 @@ public class PlayListItemsFragment extends Fragment {
                 Bundle args = new Bundle();
                 args.putString("video_id", songId);
                 ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(name);
-                ((MyActivity) context).updateNotification(name);
+                ((MyActivity) context).getService().updateNotification(name);
                 fragment.setArguments(args);
                 fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();
             }
