@@ -33,10 +33,5 @@
                 android:resource="@xml/searchable" />
         </activity>
         <service android:name="com.app.musicplayer.Util.MusicService" />
-        <receiver android:name="com.app.musicplayer.UI.MyActivity$AudioPlayerBroadcastReceiver" >
-            <intent-filter>
-                <action android:name="ACTION_PLAY" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>
