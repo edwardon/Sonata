@@ -27,6 +27,7 @@ import android.widget.ListView;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -247,9 +248,14 @@ public class VideoListFragment extends Fragment {
                 String imageStr = "http://img.youtube.com/vi/" + rId.getVideoId() + "/0.jpg";
                 Bitmap image = null;
                 // Actually load the image.
+
                 try {
                     URL imageUrl = new URL(imageStr);
-                    image = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
+                    URLConnection openConn = imageUrl.openConnection();
+                    // This can most likely speed up loading??
+                    openConn.setRequestProperty("User-Agent",
+                            "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+                    image = BitmapFactory.decodeStream(openConn.getInputStream());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

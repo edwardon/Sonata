@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:text="Actions"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:background="@color/teal"
+        android:paddingLeft = "10dp"
+        android:paddingRight = "10dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id = "@+id/song_edit_details"
+        android:text="Edit Details"
+        android:gravity="center_vertical"
+        android:textSize="16sp"
+        android:textColor="@color/dark_grey"
+        android:paddingLeft = "10dp"
+        android:paddingRight = "10dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id = "@+id/song_delete_textview"
+        android:textColor="@color/dark_grey"
+        android:text="Delete From Playlist"
+        android:gravity="center_vertical"
+        android:textSize="16sp"
+        android:paddingLeft = "10dp"
+        android:paddingRight = "10dp"/>
+</LinearLayout>

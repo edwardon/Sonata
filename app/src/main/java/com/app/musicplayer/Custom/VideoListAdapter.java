@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,10 +38,12 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
     private ArrayList<Video> videoList;
     private Context context;
     private Typeface openFont;
+    private MyActivity myActivity;
     public VideoListAdapter(Context context, int resource, List<Video> objects) {
         super(context, resource, objects);
         videoList = (ArrayList) objects;
         this.context = context;
+
     }
 
     @Override
@@ -75,6 +78,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
         });
 
         ImageView cardImageView = (ImageView) convertView.findViewById(R.id.thumbnail);
+        myActivity = (MyActivity) getContext();
         cardImageView.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -84,7 +88,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
         });
         cardImageView.setOnLongClickListener(new View.OnLongClickListener() {
 
-            MyActivity myActivity = (MyActivity) getContext();
+            //MyActivity myActivity = (MyActivity) getContext();
             @Override
             public boolean onLongClick(View v) {
                 myActivity.showAddPopup(v,item.videoTitle, item.videoID,item.thumbnailLink);
@@ -93,14 +97,21 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
         });
         cardLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
 
-            MyActivity myActivity = (MyActivity) getContext();
+            //MyActivity myActivity = (MyActivity) getContext();
             @Override
             public boolean onLongClick(View v) {
                 myActivity.showAddPopup(v,item.videoTitle, item.videoID,item.thumbnailLink);
                 return true;
             }
         });
+        ImageButton imageButton = (ImageButton) convertView.findViewById(R.id.search_more_button);
+        imageButton.setOnClickListener(new View.OnClickListener(){
 
+            @Override
+            public void onClick(View v) {
+                myActivity.showAddPopup(v,item.videoTitle, item.videoID,item.thumbnailLink);
+            }
+        });
 
         return convertView;
     }

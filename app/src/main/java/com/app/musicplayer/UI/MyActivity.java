@@ -64,11 +64,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.MediaController;
+import android.widget.PopupMenu;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.app.musicplayer.Custom.MusicArrayAdapter;
 import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerCallbacks;
 import com.app.musicplayer.Custom.NavigationDrawer.NavigationDrawerFragment;
 import com.app.musicplayer.Custom.TypeFaceSpan;
@@ -98,6 +100,8 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     private Toolbar mToolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
+    //activity and playback pause flags
+    private boolean paused = false, playbackPaused = false;
 
     private boolean musicBound = false;
     //connect to the service
@@ -166,11 +170,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 
         FragmentManager fragmentManager = getFragmentManager();
 
-        controller = new MusicMediaController(this);
-        controller.setAnchorView(findViewById(R.id.main_linearlayout));
-        controller.setMediaPlayer(this);
-        controller.setEnabled(true);
-        controller.setSongTitle(controller.activeTitle);
+        setupController();
 
         // Get the intent, verify the action and get the query
         Intent intent = getIntent();
@@ -189,61 +189,33 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             fragmentManager.beginTransaction()
                     .replace(R.id.main_linearlayout, fragment)
                     .commit();
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    controller.show(0);
-                }
-            },1000);
         } else {
             fragmentManager.beginTransaction()
                     .replace(R.id.main_linearlayout, new VideoListFragment())
                     .commit();
         }
 
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                controller.show(0);
+            }
+        },1000);
+
         String dir = "/data/data/com.app.musicplayer/files";
         addToPlaylistTest();
     }
 
+    private void setupController() {
+        controller = new MusicMediaController(this);
+        controller.setAnchorView(findViewById(R.id.main_linearlayout));
+        controller.setMediaPlayer(this);
+        controller.setEnabled(true);
+        controller.setSongTitle(controller.activeTitle);
+    }
 
-    /*public void updateNotification(String title) {
-        Intent resultIntent = new Intent(this, MyActivity.class);
 
-// This ensures that the back button follows the recommended
-// convention for the back key.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-// Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MyActivity.class);
-
-// Adds the Intent that starts the Activity to the top of the stack.
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
-                0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-// Create remote view and set bigContentView.
-        RemoteViews expandedView = new RemoteViews(this.getPackageName(),
-                R.layout.notification);
-        expandedView.setTextViewText(R.id.notif_textView, title);
-
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setAutoCancel(true)
-                .setContentIntent(resultPendingIntent)
-                .setContentTitle("Now Playing")
-                .setContentInfo(title).build();
-
-        notification.bigContentView = expandedView;
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        Intent switchIntent = new Intent("com.example.app.ACTION_PLAY");
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, switchIntent,0);
-//
-//
-//        expandedView.setOnClickPendingIntent(R.id.notif_playButton, pendingIntent);
-        mNotificationManager.notify(1, notification);
-    }*/
 
     // Call this to clear the search history
     public void clearHistory() {
@@ -281,11 +253,27 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         controller.actualHide();
         super.onStop();
     }
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        controller.show();
-//    }
+
+    @Override
+    public void onPause() {
+        paused = true;
+        super.onPause();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (paused) {
+            setupController();
+            paused = false;
+        }
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                controller.show(0);
+//            }
+//        },1000);
+    }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -342,12 +330,144 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         return super.onOptionsItemSelected(item);
     }
 
+
+
+    @Override
+    public void start() {
+        musicService.go();
+        musicService.updateNotification(controller.getTitle());
+    }
+
+    @Override
+    public void pause() {
+        playbackPaused = true;
+        musicService.pause();
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if(musicService!=null && musicBound && musicService.isPlaying())
+            return musicService.getPosn();
+        if(musicService!=null && musicBound)
+            return musicService.getLastPos();
+        else return 0;
+    }
+
+    @Override
+    public int getDuration() {
+        if(musicService!=null && musicBound && musicService.isPlaying())
+            return musicService.getDur();
+        if(musicService!=null && musicBound)
+            return musicService.getLastDur();
+        return 0;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        if(musicService!=null && musicBound)
+            return musicService.isPlaying();
+        return false;
+    }
+
+    @Override
+    public void seekTo(int pos) {
+        musicService.seekTo(pos);
+    }
+
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
+    }
+
+    public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equalsIgnoreCase("ACTION_PLAY")) {
+                ((MyActivity) getParent()).pause();
+            }
+        }
+    }
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mNavigationDrawerFragment.isDrawerOpen())
+            mNavigationDrawerFragment.closeDrawer();
+        else
+            super.onBackPressed();
+    }
+    @Override
+    protected void onDestroy() {
+        //stopService(playIntent);
+        //musicService = null;
+        pause();
+        super.onDestroy();
+    }
+
+    public void setStatusBarColor(View statusBar,int color){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            //status bar height
+            int actionBarHeight = getActionBarHeight();
+            int statusBarHeight = getStatusBarHeight();
+            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            Log.v("actionbar, statusbar",actionBarHeight + " "+statusBarHeight);
+            //action bar height
+            statusBar.getLayoutParams().height = statusBarHeight;
+            statusBar.setBackgroundColor(color);
+        }
+    }
+    public int getActionBarHeight() {
+        int actionBarHeight = 0;
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))    {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+        }
+        return actionBarHeight;
+    }
+
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    // Playlist code:
     public void addToPlaylistTest() {
         int numPlaylists = 1;
         for (int i = 0; i < 1; i++) {
             String FILENAME = "playlist0";
 
             try {
+                PrintWriter playlistWriter = new PrintWriter("/data/data/com.app.musicplayer/files/playlists.txt", "UTF-8");
+                playlistWriter.println("EDM Playlist");
                 PrintWriter writer = new PrintWriter("/data/data/com.app.musicplayer/files/playlist0.txt", "UTF-8");
                 writer.println("EDM Playlist");
                 playlistNames.add("EDM Playlist");
@@ -372,7 +492,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                 writer.println("https://i.ytimg.com/vi/dlg66JU2-QU/default.jpg");
                 writer.println("jM4EZOnNKHc");
 
-
+                playlistWriter.close();
                 writer.close();
 
 //                FileOutputStream fos = openFileOutput("playlist.txt", Context.MODE_PRIVATE);
@@ -455,7 +575,60 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         lv.setAdapter(adapter);
         alertDialog.show();
     }
+    public void showSongPopup(View v, final int playlistIndex, final String playlistName, String title, String artist, final MusicArrayAdapter adapter){
+        final AlertDialog alertDialog = new AlertDialog.Builder(MyActivity.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = (View) inflater.inflate(R.layout.song_dialog_view, null);
+        alertDialog.setView(convertView);
+        TextView deleteView = (TextView) convertView.findViewById(R.id.song_delete_textview);
+        final String t = title;
+        deleteView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                deleteFromPlaylist(playlistIndex,playlistName, t, adapter);
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+    public void deleteFromPlaylist(int playlistIndex, String playlistName, String title, MusicArrayAdapter adapter){
+        PrintWriter writer;
+        FileReader reader;
+        String filename = "playlist" + playlistIndex + ".txt";
+        try {
+            reader = new FileReader("/data/data/com.app.musicplayer/files/" + filename);
+            Scanner scanner = new Scanner(reader);
+            String playlistTitle = scanner.nextLine();
+            String songTitle = "", songId = "", artist = "", songThumbnail = "";
+            writer = new PrintWriter("/data/data/com.app.musicplayer/files/" + filename, "UTF-8");
+            writer.println(playlistTitle);
+            while (scanner.hasNextLine()) {
+                songTitle = scanner.nextLine();
+                artist = scanner.nextLine();
+                songThumbnail = scanner.nextLine();
+                songId = scanner.nextLine();
+                if (!songTitle.equals(title)){
 
+                    writer.println(songTitle);
+                    writer.println(artist);
+                    writer.println(songThumbnail);
+                    writer.println(songId);
+                }
+            }
+            writer.close();
+        } catch (IOException e) {
+        }
+        finally{
+            Fragment fragment = new PlayListItemsFragment();
+            Bundle args = new Bundle();
+            args.putInt("playlists",playlistIndex);
+            args.putString("name",playlistName);
+            fragment.setArguments(args);
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();
+        }
+
+    }
     public void renameSong(int playlistIndex, String curTitle, String videoId, String videoThumbnail){
         AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
         LayoutInflater inflater = getLayoutInflater();
@@ -509,126 +682,5 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                     }
                 });
         builder.show();
-    }
-
-    @Override
-    public void start() {
-            musicService.go();
-            musicService.updateNotification(controller.getTitle());
-    }
-
-    @Override
-    public void pause() {
-        musicService.pause();
-    }
-
-    @Override
-    public int getCurrentPosition() {
-        if(musicService!=null && musicBound && musicService.isPlaying())
-            return musicService.getPosn();
-        else return 0;
-    }
-
-    @Override
-    public int getDuration() {
-        if(musicService!=null && musicBound/* && musicService.isPlaying()*/)
-            return musicService.getDur();
-        else return 0;
-    }
-
-    @Override
-    public boolean isPlaying() {
-        if(musicService!=null && musicBound)
-            return musicService.isPlaying();
-        return false;
-    }
-
-    @Override
-    public void seekTo(int pos) {
-        musicService.seekTo(pos);
-    }
-
-
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekBackward() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return true;
-    }
-
-    @Override
-    public int getAudioSessionId() {
-        return 0;
-    }
-
-    public class AudioPlayerBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equalsIgnoreCase("ACTION_PLAY")) {
-                ((MyActivity) getParent()).pause();
-            }
-        }
-    }
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mNavigationDrawerFragment.isDrawerOpen())
-            mNavigationDrawerFragment.closeDrawer();
-        else
-            super.onBackPressed();
-    }
-    @Override
-    protected void onDestroy() {
-        stopService(playIntent);
-        musicService = null;
-        super.onDestroy();
-    }
-
-    public void setStatusBarColor(View statusBar,int color){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window w = getWindow();
-            //status bar height
-            int actionBarHeight = getActionBarHeight();
-            int statusBarHeight = getStatusBarHeight();
-            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            Log.v("actionbar, statusbar",actionBarHeight + " "+statusBarHeight);
-            //action bar height
-            statusBar.getLayoutParams().height = statusBarHeight;
-            statusBar.setBackgroundColor(color);
-        }
-    }
-    public int getActionBarHeight() {
-        int actionBarHeight = 0;
-        TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))    {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
-        }
-        return actionBarHeight;
-    }
-
-    public int getStatusBarHeight() {
-        int result = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
-        }
-        return result;
     }
 }

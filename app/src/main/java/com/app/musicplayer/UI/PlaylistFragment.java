@@ -18,6 +18,7 @@ import com.app.musicplayer.R;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -36,42 +37,25 @@ public class PlaylistFragment extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.playlist_listview);
 
         ArrayList<String> playlistNames = new ArrayList<String>();
-
-        int num = getArguments().getInt("playlists",0);
-        if (num!=0){
-            try {
-                //InputStream inputStream = mContext.openFileInput("playlist.txt");
-                for (int i=0; i<num; i++){
-                    Log.v("num is",""+num);
-                    FileReader reader = new FileReader ("/data/data/com.app.musicplayer/files/playlist"+i+".txt");
-                    Scanner scanner = new Scanner (reader);
-
-
-                    String line = scanner.nextLine();
-                    playlistNames.add(line);
-//                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-//                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-//                    String receiveString = "";
-//                    StringBuilder stringBuilder = new StringBuilder();
-//
-//                    while ( (receiveString = bufferedReader.readLine()) != null ) {
-//                        stringBuilder.append(receiveString);
-//                    }
-//
-//                    inputStream.close();
-//                    String ret = stringBuilder.toString();
-
-
-                }
-
-            }
-            catch (IOException e){
-
+        final HashMap<String, Integer> playlistMap = new HashMap<String, Integer>();
+        int counter =0;
+        try {
+            FileReader reader = new FileReader ("/data/data/com.app.musicplayer/files/playlists.txt");
+            Scanner scanner = new Scanner (reader);
+            String line;
+            while (scanner.hasNextLine()){
+                line = scanner.nextLine();
+                playlistNames.add(line);
+                playlistMap.put(line,counter);
+                counter++;
             }
 
         }
+        catch (IOException e){
 
-        //sample bullshit
+        }
+
+
 
 
 
@@ -89,7 +73,7 @@ public class PlaylistFragment extends Fragment {
                 String name = ((TextView) view.findViewById(R.id.playlist_item_textview)).getText().toString();
                 args.putString("name", name);
 
-                int num = getArguments().getInt("playlists",0);
+                int num = playlistMap.get(name);
                 args.putInt("playlists",num);
                 fragment.setArguments(args);
                 fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();

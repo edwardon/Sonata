@@ -7,16 +7,16 @@
 
 
     <com.app.musicplayer.Custom.FontTextView
-        xmlns:custom= "http://schemas.android.com/apk/res-auto"
-        custom:fontName="SourceSansPro-Regular.otf"
-        android:layout_width="wrap_content"
-        android:layout_height="46dp"
-        android:textSize="20sp"
-        android:padding="2dp"
-        android:paddingBottom="20dp"
-        android:text="Songs in this list"
-        android:textColor="#616161"
-        android:id="@+id/playlist_name_textview"
+    xmlns:custom= "http://schemas.android.com/apk/res-auto"
+    custom:fontName="SourceSansPro-Regular.otf"
+    android:layout_width="wrap_content"
+    android:layout_height="46dp"
+    android:textSize="20sp"
+    android:padding="2dp"
+    android:paddingBottom="20dp"
+    android:text="Songs in this list"
+    android:textColor="#616161"
+    android:id="@+id/playlist_name_textview"
         android:gravity="bottom"
         android:layout_gravity="center" />
 
