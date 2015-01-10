@@ -34,10 +34,7 @@ import java.util.Scanner;
  */
 public class PlayListItemsFragment extends Fragment{
 
-    private Context context;
-    public PlayListItemsFragment(){
-        context = getActivity();
-    }
+    private MyActivity myActivity;
     final ArrayList<Song> songNames = new ArrayList<Song>();
     MusicArrayAdapter musicArrayAdapter;
     GridView gridView;
@@ -94,7 +91,8 @@ public class PlayListItemsFragment extends Fragment{
 
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        context = getActivity();
+        myActivity = (MyActivity)getActivity();
+        myActivity.showController();
         String name = getArguments().getString("name");
 
         View rootView = inflater.inflate(R.layout.song_layout, container, false);

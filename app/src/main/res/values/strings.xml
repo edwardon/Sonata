@@ -44,8 +44,10 @@
     <string name="song_artist">Artist</string>
     <string name="song_details">Song Details</string>
     <string name="name_confirm">OK</string>
-    <string name = "cancel"> cancel</string>
+    <string name = "cancel">Cancel</string>
     <string name="drawer_close">Sonata</string>
+    <string name = "newplaylist">Playlist</string>
+    <string name = "newplaylisttitle">Enter A Playlist Name</string>
 
 
 </resources>

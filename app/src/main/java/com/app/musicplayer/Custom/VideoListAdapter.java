@@ -19,7 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.app.musicplayer.UI.MusicMediaController;
@@ -69,8 +69,8 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
 //        textView.setHeight(pixels);
 //        textView.setPadding(0,0,0,0);
         convertView.setTag(position);
-        LinearLayout cardLinearLayout = (LinearLayout) convertView.findViewById(R.id.search_linearlayout);
-        cardLinearLayout.setOnClickListener(new View.OnClickListener() {
+        RelativeLayout cardRelativeLayout = (RelativeLayout) convertView.findViewById(R.id.search_linearlayout);
+        cardRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadSong(item);
@@ -95,7 +95,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
                 return true;
             }
         });
-        cardLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
+        cardRelativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
 
             //MyActivity myActivity = (MyActivity) getContext();
             @Override

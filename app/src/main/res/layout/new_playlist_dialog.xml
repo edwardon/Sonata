@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,14 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:textColor="@color/white"
-        android:text="@string/song_details"
+        android:text="@string/newplaylisttitle"
         android:gravity="center_vertical"
         android:textSize="20sp"
         android:background="@color/teal"
         android:paddingLeft = "10dp"
         android:paddingRight = "10dp"/>
 
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,18 +22,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="@string/song_title"
-        android:id = "@+id/title_textbox"
+        android:hint="@string/newplaylist"
+        android:id = "@+id/new_playlist_edittext"
         />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
-        android:hint="@string/song_artist"
-        android:id = "@+id/artist_textbox"
-        />
-
-</LinearLayout>
+    </LinearLayout>

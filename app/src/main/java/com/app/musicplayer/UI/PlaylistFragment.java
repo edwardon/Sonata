@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.app.musicplayer.Custom.PlaylistArrayAdapter;
 import com.app.musicplayer.R;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,41 +26,55 @@ import java.util.Scanner;
  * Created by Yuwei on 2014-11-14.
  */
 public class PlaylistFragment extends Fragment {
-    Context mContext;
-    public PlaylistFragment(){
-        mContext = getActivity();
-    }
+    MyActivity myActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        myActivity = (MyActivity)getActivity();
+
         Log.v("PlaylistFragment", "is being created");
         View rootView = inflater.inflate(R.layout.fragment_playlist,container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.playlist_listview);
 
         ArrayList<String> playlistNames = new ArrayList<String>();
+        PlaylistArrayAdapter mArrayAdapter = new PlaylistArrayAdapter(getActivity(), R.layout.fragment_playlist, playlistNames);
         final HashMap<String, Integer> playlistMap = new HashMap<String, Integer>();
-        int counter =0;
         try {
             FileReader reader = new FileReader ("/data/data/com.app.musicplayer/files/playlists.txt");
             Scanner scanner = new Scanner (reader);
-            String line;
+            String playlistName,line;
+            int index=-1;
             while (scanner.hasNextLine()){
+                playlistName = scanner.nextLine();
+                playlistNames.add(playlistName);
                 line = scanner.nextLine();
-                playlistNames.add(line);
-                playlistMap.put(line,counter);
-                counter++;
+                index = Integer.parseInt(line);
+                playlistMap.put(playlistName,index);
+
+
+
             }
+            Log.v("index =", ""+index);
 
         }
         catch (IOException e){
 
         }
+        finally{
+            mArrayAdapter.notifyDataSetChanged();
+        }
 
 
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.add_playlist_button);
+        fab.attachToListView(listView);
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                myActivity.addPlaylist();
+            }
+        });
+        Log.v("num of playlists",""+playlistNames.size());
 
-
-
-        PlaylistArrayAdapter mArrayAdapter = new PlaylistArrayAdapter(getActivity(), R.id.playlist_listview, playlistNames);
 
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
             FragmentManager fragmentManager;
@@ -81,12 +96,8 @@ public class PlaylistFragment extends Fragment {
         });
 
         listView.setAdapter(mArrayAdapter);
-
+        myActivity.hideController();
         return rootView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
 }

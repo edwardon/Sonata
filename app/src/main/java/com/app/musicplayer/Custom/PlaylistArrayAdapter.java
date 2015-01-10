@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.app.musicplayer.R;
+import com.app.musicplayer.UI.MyActivity;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.List;
 
@@ -15,13 +17,14 @@ import java.util.List;
  * Created by Yuwei on 2014-11-14.
  */
 public class PlaylistArrayAdapter extends ArrayAdapter<String> {
-
+    MyActivity myActivity;
     public PlaylistArrayAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        myActivity = (MyActivity) getContext();
         String name = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {

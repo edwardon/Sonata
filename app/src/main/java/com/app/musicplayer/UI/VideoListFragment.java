@@ -54,7 +54,7 @@ public class VideoListFragment extends Fragment {
     private String queryTerm;
     MyActivity myActivity;
     public VideoListFragment(){
-        myActivity = (MyActivity) getActivity();
+
     }
 
     public void refreshController() {
@@ -65,7 +65,7 @@ public class VideoListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.search_layout, container, false);
         videoAdapter = new VideoListAdapter(getActivity(),R.layout.search_view, searchArray);
-
+        myActivity = (MyActivity) getActivity();
         gridView = (GridView) rootView.findViewById(R.id.search_listview);
         gridView.setAdapter(videoAdapter);
 //        swipeListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -165,6 +165,7 @@ public class VideoListFragment extends Fragment {
         else {
             queryTerm = getArguments().getString("query");
         }
+        myActivity.showController();
         new getSearchQuery().execute();
         return rootView;
     }

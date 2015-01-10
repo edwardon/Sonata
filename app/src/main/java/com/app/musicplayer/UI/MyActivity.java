@@ -57,6 +57,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -125,6 +126,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     @Override
     protected void onStart() {
         super.onStart();
+        addToPlaylistTest();
         if(playIntent==null){
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
@@ -204,7 +206,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         },1000);
 
         String dir = "/data/data/com.app.musicplayer/files";
-        addToPlaylistTest();
     }
 
     private void setupController() {
@@ -215,8 +216,20 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         controller.setSongTitle(controller.activeTitle);
     }
 
-
-
+    public void showController(){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                controller.show(0);
+            }
+        },2000);
+    }
+    public void hideController(){
+        if (controller!=null){
+            controller.actualHide();
+        }
+    }
     // Call this to clear the search history
     public void clearHistory() {
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
@@ -313,7 +326,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         searchView.setSubmitButtonEnabled(true);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
@@ -468,6 +480,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             try {
                 PrintWriter playlistWriter = new PrintWriter("/data/data/com.app.musicplayer/files/playlists.txt", "UTF-8");
                 playlistWriter.println("EDM Playlist");
+                playlistWriter.println("0");
                 PrintWriter writer = new PrintWriter("/data/data/com.app.musicplayer/files/playlist0.txt", "UTF-8");
                 writer.println("EDM Playlist");
                 playlistNames.add("EDM Playlist");
@@ -513,24 +526,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         }
         mPrefs.edit().putInt(PLAYLIST, 1).commit();
     }
-
-    public void addToPlaylist(View view) {
-
-        int numPlaylists = mPrefs.getInt(PLAYLIST, 0);
-        numPlaylists++;
-        String FILENAME = "Playlist" + numPlaylists;
-        mPrefs.edit().putInt(PLAYLIST, numPlaylists).apply();
-        try {
-
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            //fos.write(string.getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
-        }
-
-    }
-
     public void showAddPopup(View v,String title, String id,String thumbnail) {
         Log.v("HashSet is currently at",playlistNames.size()+"");
         boolean flag = false;
@@ -565,7 +560,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                 }
 
                 if (index!= -1) {
-                    renameSong(index, videoTitle, videoId, videoThumbnail);
+                    addSong(index, videoTitle, videoId, videoThumbnail);
                     alertDialog.dismiss();
                 }
             }
@@ -581,17 +576,94 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         View convertView = (View) inflater.inflate(R.layout.song_dialog_view, null);
         alertDialog.setView(convertView);
         TextView deleteView = (TextView) convertView.findViewById(R.id.song_delete_textview);
+        TextView editView = (TextView) convertView.findViewById(R.id.song_edit_details);
         final String t = title;
         deleteView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                deleteFromPlaylist(playlistIndex,playlistName, t, adapter);
+                deleteFromPlaylist(playlistIndex,playlistName, t);
+                alertDialog.dismiss();
+            }
+        });
+        editView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                renameSong(playlistIndex, playlistName, t);
                 alertDialog.dismiss();
             }
         });
         alertDialog.show();
     }
-    public void deleteFromPlaylist(int playlistIndex, String playlistName, String title, MusicArrayAdapter adapter){
+    public void renameSong(final int playlistIndex,final String playlistName,final String title){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = inflater.inflate(R.layout.rename_layout, null);
+        final EditText titleText = (EditText) convertView.findViewById(R.id.title_textbox);
+        final EditText artistText = (EditText) convertView.findViewById(R.id.artist_textbox);
+        titleText.setText(title);
+        builder.setView(convertView)
+                .setPositiveButton(R.string.name_confirm, new DialogInterface.OnClickListener() {
+                    PrintWriter writer;
+                    FileReader reader;
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        String filename = "playlist" + playlistIndex + ".txt";
+                        try {
+                            reader = new FileReader("/data/data/com.app.musicplayer/files/" + filename);
+                            Scanner scanner = new Scanner(reader);
+                            String playlistTitle = scanner.nextLine();
+                            String songTitle = "", songId = "", artist = "", songThumbnail = "";
+                            writer = new PrintWriter("/data/data/com.app.musicplayer/files/" + filename, "UTF-8");
+                            writer.println(playlistTitle);
+                            String newTitle = titleText.getText().toString();
+                            String newArtist = artistText.getText().toString();
+                            while (scanner.hasNextLine()) {
+                                songTitle = scanner.nextLine();
+                                artist = scanner.nextLine();
+                                songThumbnail = scanner.nextLine();
+                                songId = scanner.nextLine();
+                                if (songTitle.equals(title)) {
+                                    writer.println(newTitle);
+                                    writer.println(newArtist);
+                                } else {
+                                    writer.println(songTitle);
+                                    writer.println(artist);
+                                }
+                                writer.println(songThumbnail);
+                                writer.println(songId);
+                            }
+
+
+                            writer.close();
+                        } catch (IOException e) {
+                        } finally {
+                            getWindow().setSoftInputMode(
+                                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                            );
+                            Fragment fragment = new PlayListItemsFragment();
+                            Bundle args = new Bundle();
+                            args.putInt("playlists", playlistIndex);
+                            args.putString("name", playlistName);
+                            fragment.setArguments(args);
+                            FragmentManager fragmentManager = getFragmentManager();
+                            fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                        );
+                    }
+                });
+        builder.show();
+    }
+    public void deleteFromPlaylist(int playlistIndex, String playlistName, String title){
         PrintWriter writer;
         FileReader reader;
         String filename = "playlist" + playlistIndex + ".txt";
@@ -629,7 +701,70 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         }
 
     }
-    public void renameSong(int playlistIndex, String curTitle, String videoId, String videoThumbnail){
+    public void addPlaylist(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = inflater.inflate(R.layout.new_playlist_dialog, null);
+        final EditText newPlaylistText = (EditText) convertView.findViewById(R.id.new_playlist_edittext);
+        builder.setView(convertView)
+                .setPositiveButton(R.string.name_confirm, new DialogInterface.OnClickListener() {
+                    PrintWriter writer,playlistWriter;
+                    FileReader reader;
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        String filename = "playlists.txt";
+                        try {
+                            reader = new FileReader("/data/data/com.app.musicplayer/files/" + filename);
+
+                            Scanner scanner = new Scanner(reader);
+                            String playlistTitle;
+                            String playlistIndex;
+                            int index =0;
+                            writer = new PrintWriter("/data/data/com.app.musicplayer/files/" + filename, "UTF-8");
+
+                            while (scanner.hasNextLine()) {
+                                playlistTitle = scanner.nextLine();
+                                playlistIndex = scanner.nextLine();
+                                Log.v("playlistLine",playlistTitle+" "+playlistIndex);
+                                index = Integer.parseInt(playlistIndex);
+                                writer.println(playlistTitle);
+                                writer.println(playlistIndex);
+
+                            }
+                            index+=1;
+                            String newPlaylistName = newPlaylistText.getText().toString();
+                            writer.println(newPlaylistName);
+                            writer.println(index+"");
+                            Log.v("index = ",index+"");
+                            writer.close();
+                            String playfilename = "playlist" + index + ".txt";
+                            playlistWriter = new PrintWriter("/data/data/com.app.musicplayer/files/"+playfilename+"UTF-8");
+                            playlistWriter.println(newPlaylistName);
+                            playlistWriter.close();
+                        } catch (IOException e) {
+                        } finally {
+                            getWindow().setSoftInputMode(
+                                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                            );
+                            Fragment fragment = new PlaylistFragment();
+                            FragmentManager fragmentManager = getFragmentManager();
+                            fragmentManager.beginTransaction().replace(R.id.main_linearlayout, fragment).commit();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                        );
+                    }
+                });
+        builder.show();
+
+    }
+    public void addSong(int playlistIndex, String curTitle, String videoId, String videoThumbnail){
         AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View convertView = inflater.inflate(R.layout.rename_layout, null);
@@ -670,6 +805,10 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                             writer.println(id);
                             writer.close();
                         } catch (IOException e) {
+                        } finally {
+                            getWindow().setSoftInputMode(
+                                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                            );
                         }
                     }
                 })
@@ -678,7 +817,9 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-
+                        getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                        );
                     }
                 });
         builder.show();
