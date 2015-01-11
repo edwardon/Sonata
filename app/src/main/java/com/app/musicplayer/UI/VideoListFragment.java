@@ -165,7 +165,7 @@ public class VideoListFragment extends Fragment {
         else {
             queryTerm = getArguments().getString("query");
         }
-        myActivity.showController();
+        //myActivity.showController();
         new getSearchQuery().execute();
         return rootView;
     }

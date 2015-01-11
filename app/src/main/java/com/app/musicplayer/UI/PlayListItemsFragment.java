@@ -92,7 +92,7 @@ public class PlayListItemsFragment extends Fragment{
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myActivity = (MyActivity)getActivity();
-        myActivity.showController();
+        //myActivity.showController();
         String name = getArguments().getString("name");
 
         View rootView = inflater.inflate(R.layout.song_layout, container, false);

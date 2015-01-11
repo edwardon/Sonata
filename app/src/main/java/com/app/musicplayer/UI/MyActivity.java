@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +36,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,6 +59,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -66,7 +72,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,6 +97,8 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
     private final String PLAYLIST_NAMES = "PLAYLIST_NAMES";
     private final int notifId = 1;
     //public static MediaPlayer mediaPlayer = null;
+    ImageButton mPlayPauseButton;
+    SeekBar mSeekbar;
 
     private MusicMediaController controller;
 
@@ -197,14 +207,17 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                     .commit();
         }
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                controller.show(0);
-            }
-        },1000);
-
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                controller.show(0);
+//            }
+//        },1000);
+        mPlayPauseButton = (ImageButton) findViewById(R.drawable.btn_playback_play);
+        mPlayPauseButton.setOnClickListener(playPauseClickListener);
+        mSeekbar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
+        mSeekbar.setOnSeekBarChangeListener(seekBarChangeListener);
         String dir = "/data/data/com.app.musicplayer/files";
     }
 
@@ -216,15 +229,15 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         controller.setSongTitle(controller.activeTitle);
     }
 
-    public void showController(){
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                controller.show(0);
-            }
-        },2000);
-    }
+//    public void showController(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                controller.show(0);
+//            }
+//        },2000);
+//    }
     public void hideController(){
         if (controller!=null){
             controller.actualHide();
@@ -239,7 +252,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        controller.show(0);
+        //controller.show(0);
         return super.onTouchEvent(event);
     }
 
@@ -313,7 +326,7 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                 if (hasFocus) {
                     controller.actualHide();
                 }
-                else controller.show(0);
+               // else controller.show(0);
             }
         });
 
@@ -823,5 +836,212 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
                     }
                 });
         builder.show();
+    }
+    public void updatePlayPauseButton(){
+        mPlayPauseButton.setId(R.drawable.btn_playback_play);
+        animatePlayToPause();
+    }
+    private View.OnClickListener playPauseClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+
+            //BZZZT! Give the user a brief haptic feedback touch response.
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+            //Update the playback UI elements.
+            if (musicService.isPlaying()) {
+                animatePauseToPlay();
+                musicService.pause();
+                Log.v("current pos: ", musicService.getPosn()+"");
+
+            } else {
+                musicService.go();
+                animatePlayToPause();
+            }
+
+            /*
+             * Toggle the playback state in a separate thread. This
+             * will allow the play/pause button animation to remain
+             * buttery smooth.
+             */
+//            new AsyncTask() {
+//
+//                @Override
+//                protected Object doInBackground(Object[] params) {
+//                    mApp.getService().togglePlaybackState();
+//                    return null;
+//                }
+//
+//            }.execute();
+
+        }
+
+    };
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int seekBarPosition, boolean changedByUser) {
+
+            try {
+                long currentSongDuration =musicService.getMediaPlayer().getDuration();
+                seekBar.setMax((int) currentSongDuration / 1000);
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            int seekBarPosition = seekBar.getProgress();
+            musicService.seekTo(seekBarPosition * 1000);
+
+//            //Reinitiate the handler.
+//            mHandler.post(seekbarUpdateRunnable);
+//
+//            //Fade out the indicator after 1000ms.
+//            mHandler.postDelayed(fadeOutSeekbarIndicator, 1000);
+
+        }
+
+    };
+    private void animatePlayToPause() {
+
+        //Check to make sure the current icon is the play icon.
+        if (mPlayPauseButton.getId()!=R.drawable.btn_playback_play)
+            return;
+
+        //Fade out the play button.
+        final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
+                mPlayPauseButton.getWidth()/2,
+                mPlayPauseButton.getHeight()/2);
+        scaleOut.setDuration(150);
+        scaleOut.setInterpolator(new AccelerateInterpolator());
+
+
+        //Scale in the pause button.
+        final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+                mPlayPauseButton.getWidth()/2,
+                mPlayPauseButton.getHeight()/2);
+        scaleIn.setDuration(150);
+        scaleIn.setInterpolator(new DecelerateInterpolator());
+
+        scaleOut.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mPlayPauseButton.setImageResource(R.drawable.btn_playback_pause);
+                mPlayPauseButton.setPadding(0, 0, 0, 0);
+                mPlayPauseButton.startAnimation(scaleIn);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+        });
+
+        scaleIn.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mPlayPauseButton.setScaleX(1.0f);
+                mPlayPauseButton.setScaleY(1.0f);
+                mPlayPauseButton.setId(R.drawable.btn_playback_pause);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+        });
+
+        mPlayPauseButton.startAnimation(scaleOut);
+    }
+    private void animatePauseToPlay() {
+
+        //Check to make sure the current icon is the pause icon.
+        if (mPlayPauseButton.getId()!=R.drawable.btn_playback_pause)
+            return;
+
+        //Scale out the pause button.
+        final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
+                mPlayPauseButton.getWidth()/2,
+                mPlayPauseButton.getHeight()/2);
+        scaleOut.setDuration(150);
+        scaleOut.setInterpolator(new AccelerateInterpolator());
+
+
+        //Scale in the play button.
+        final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+                mPlayPauseButton.getWidth()/2,
+                mPlayPauseButton.getHeight()/2);
+        scaleIn.setDuration(150);
+        scaleIn.setInterpolator(new DecelerateInterpolator());
+
+        scaleOut.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mPlayPauseButton.setImageResource(R.drawable.btn_playback_play);
+                mPlayPauseButton.setPadding(0, 0, -5, 0);
+                mPlayPauseButton.startAnimation(scaleIn);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+        });
+
+        scaleIn.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mPlayPauseButton.setScaleX(1.0f);
+                mPlayPauseButton.setScaleY(1.0f);
+                mPlayPauseButton.setId(R.drawable.btn_playback_play);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+        });
+
+        mPlayPauseButton.startAnimation(scaleOut);
     }
 }

@@ -117,11 +117,13 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
     }
 
     private void loadSong(Video item) {
+
         FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
         Bundle bundle = new Bundle();
         MediaFragment fragment = new MediaFragment();
-        ((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(item.videoTitle);
-        ((MyActivity) context).getService().updateNotification(item.videoTitle);
+        myActivity.updatePlayPauseButton();
+        //((MusicMediaController) ((MyActivity) context).getController()).setSongTitle(item.videoTitle);
+        myActivity.getService().updateNotification(item.videoTitle);
         bundle.putString("video_id",item.videoID);
         fragment.setArguments(bundle);
 

@@ -128,7 +128,7 @@ public class MediaFragment extends Fragment {
                 catch (IOException e){};
                 player.start();
 
-                ((MyActivity) getActivity()).getController().show(0);
+                //((MyActivity) getActivity()).getController().show(0);
                 if (player.getDuration() >= 1440000000) {
                     pos++;
                     // Not every URL works, keep trying until we get one that does.

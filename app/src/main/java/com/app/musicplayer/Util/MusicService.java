@@ -67,8 +67,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         builder.setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.play)
                 .setTicker(title)
-                .setOngoing(true)
-                .setContentTitle("Playing")
+                .setContentTitle("Now Playing:")
                 .setContentText(title);
 
         Notification notification = builder.build();
@@ -117,7 +116,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         lastDur = mediaPlayer.getDuration();
         lastPos = mediaPlayer.getCurrentPosition();
         mediaPlayer.pause();
+
     }
+
     public int getLastDur() {return lastDur;}
     public int getLastPos() {return lastPos;}
     public void seekTo(int posn){

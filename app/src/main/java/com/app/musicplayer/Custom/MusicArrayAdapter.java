@@ -78,7 +78,7 @@ public class MusicArrayAdapter extends ArrayAdapter<Song> {
         FragmentManager fragmentManager = myActivity.getFragmentManager();
         MediaFragment fragment = new MediaFragment();
         Bundle bundle = new Bundle();
-        ((MusicMediaController) myActivity.getController()).setSongTitle(s.title);
+        //((MusicMediaController) myActivity.getController()).setSongTitle(s.title);
         myActivity.getService().updateNotification(s.title);
         bundle.putString("video_id",s.videoId);
         fragment.setArguments(bundle);
