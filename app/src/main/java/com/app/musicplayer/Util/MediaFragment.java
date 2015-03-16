@@ -67,6 +67,8 @@ public class MediaFragment extends Fragment {
         else {
             videoId = getArguments().getString("video_id");
         }
+
+        Log.i("Video","Grabbing and loading url");
         new YouTubePageStreamUriGetter().execute("https://www.youtube.com/watch?v=" + videoId);
     }
 
@@ -98,7 +100,6 @@ public class MediaFragment extends Fragment {
                 }
                 catch (MalformedURLException e) {
                     e.printStackTrace();
-
                 }
 
                 return null;
@@ -137,6 +138,9 @@ public class MediaFragment extends Fragment {
                     onCreate(bundle);
                 }
 
+            }
+            else {
+                Log.e("Video","Null URL");
             }
         }
     }

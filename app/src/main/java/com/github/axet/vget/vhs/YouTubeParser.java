@@ -1,14 +1,11 @@
 package com.github.axet.vget.vhs;
 
-import android.text.TextUtils;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -18,7 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -76,20 +72,67 @@ public class YouTubeParser extends VGetParser {
             this.sig = signature;
         }
 
-        //Questionable code that decrypts a signed key. a is the cipherkey.
-        private String bz(String key) {
-            String[] a = key.split("");
-            a = Arrays.copyOfRange(a,1,a.length);
-            String c = String.valueOf(a[0]);
-            a[0] = a[8 % a.length];
-            a[8] = c;
-            ArrayUtils.reverse(a);
-            a = Arrays.copyOfRange(a,1,a.length);
-            return TextUtils.join("", a);
+        String s(int b, int e) {
+            return sig.substring(b, e);
         }
-        //function Wq(a){a=a.split("");cz(a,8);Vq.JJ(a,0);Vq.b9(a,1);return a.join("")};
+
+        String s(int b) {
+            return sig.substring(b, b + 1);
+        }
+
+        String se(int b) {
+            return s(b, sig.length());
+        }
+
+        String s(int b, int e, int step) {
+            String str = "";
+
+            while (b != e) {
+                str += sig.charAt(b);
+                b += step;
+            }
+            return str;
+        }
+
+        // https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/youtube.py
         String decrypt() {
-            return bz(sig);
+            switch (sig.length()) {
+            case 93:
+                return s(86, 29, -1) + s(88) + s(28, 5, -1);
+            case 92:
+                return s(25) + s(3, 25) + s(0) + s(26, 42) + s(79) + s(43, 79) + s(91) + s(80, 83);
+            case 91:
+                return s(84, 27, -1) + s(86) + s(26, 5, -1);
+            case 90:
+                return s(25) + s(3, 25) + s(2) + s(26, 40) + s(77) + s(41, 77) + s(89) + s(78, 81);
+            case 89:
+                return s(84, 78, -1) + s(87) + s(77, 60, -1) + s(0) + s(59, 3, -1);
+            case 88:
+                return s(7, 28) + s(87) + s(29, 45) + s(55) + s(46, 55) + s(2) + s(56, 87) + s(28);
+            case 87:
+                return s(6, 27) + s(4) + s(28, 39) + s(27) + s(40, 59) + s(2) + se(60);
+            case 86:
+                return s(80, 72, -1) + s(16) + s(71, 39, -1) + s(72) + s(38, 16, -1) + s(82) + s(15, 0, -1);
+            case 85:
+                return s(3, 11) + s(0) + s(12, 55) + s(84) + s(56, 84);
+            case 84:
+                return s(78, 70, -1) + s(14) + s(69, 37, -1) + s(70) + s(36, 14, -1) + s(80) + s(0, 14, -1);
+            case 83:
+                return s(80, 63, -1) + s(0) + s(62, 0, -1) + s(63);
+            case 82:
+                return s(80, 37, -1) + s(7) + s(36, 7, -1) + s(0) + s(6, 0, -1) + s(37);
+            case 81:
+                return s(56) + s(79, 56, -1) + s(41) + s(55, 41, -1) + s(80) + s(40, 34, -1) + s(0) + s(33, 29, -1)
+                        + s(34) + s(28, 9, -1) + s(29) + s(8, 0, -1) + s(9);
+            case 80:
+                return s(1, 19) + s(0) + s(20, 68) + s(19) + s(69, 80);
+            case 79:
+                return s(54) + s(77, 54, -1) + s(39) + s(53, 39, -1) + s(78) + s(38, 34, -1) + s(0) + s(33, 29, -1)
+                        + s(34) + s(28, 9, -1) + s(29) + s(8, 0, -1) + s(9);
+            }
+
+            throw new RuntimeException("Unable to decrypt signature, key length " + sig.length()
+                    + " not supported; retrying might work");
         }
     }
 
@@ -438,7 +481,7 @@ public class YouTubeParser extends VGetParser {
 
         // combined streams
         {
-            Pattern urlencod = Pattern.compile("\"url_encoded_fmt_stream_map\": \"([^\"]*)\"");
+            Pattern urlencod = Pattern.compile("\"url_encoded_fmt_stream_map\":\"([^\"]*)\"");
             Matcher urlencodMatch = urlencod.matcher(html);
             if (urlencodMatch.find()) {
                 String url_encoded_fmt_stream_map;
@@ -597,7 +640,6 @@ public class YouTubeParser extends VGetParser {
                         sig = linkMatch.group(1);
 
                         DecryptSignature ss = new DecryptSignature(sig);
-                        System.out.println("DECRYPTING");
                         sig = ss.decrypt();
                     }
                 }

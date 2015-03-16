@@ -150,7 +150,6 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
         mNavigationDrawerFragment.setup(R.id.fragment_drawer, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
 
 
-
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (mPrefs.contains(PLAYLIST)) {
@@ -279,13 +278,13 @@ public class MyActivity extends ActionBarActivity implements MediaController.Med
             setupController();
             paused = false;
         }
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                controller.show(0);
-//            }
-//        },1000);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                controller.show(0);
+            }
+        },1000);
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

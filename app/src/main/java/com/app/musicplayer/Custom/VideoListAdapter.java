@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.Gravity;
 
 import android.os.Bundle;
@@ -117,6 +118,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
     }
 
     private void loadSong(Video item) {
+        Log.i("Video", "Loading...");
         FragmentManager fragmentManager = ((MyActivity) context).getFragmentManager();
         Bundle bundle = new Bundle();
         MediaFragment fragment = new MediaFragment();
